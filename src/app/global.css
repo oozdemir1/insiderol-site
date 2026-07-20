@@ -1,0 +1,1269 @@
+@import "tailwindcss";
+
+:root {
+
+  /* MAIN BACKGROUND */
+  --background: #f4f1ea;
+
+  /* DARK SURFACES (navbar / hero / footer) */
+  --surface: #1b2421;
+  --surface-2: #22302b;
+
+  /* LIGHT SECTIONS */
+  --section-light: #f9f9f9;
+  --section-light-2: #ffffff;
+
+  /* LIGHT CARDS */
+  --card-light: rgba(255, 255, 255, 0.72);
+
+  /*CARDS*/
+
+  --card-green: #159570;
+  --card-green-hover: #0f7f60;
+
+  --card-green-2: #1c7c65;
+  --card-green-2-hover: #176854;
+
+  --card-green-3: #2a8f78;
+  --card-green-3-hover: #237863;
+
+  /* DARK TEXT */
+  --text-dark: #18322b;
+  --muted-dark: #52665f;
+
+  /* LIGHT TEXT (for dark sections) */
+  --foreground: #f3f4f6;
+  --muted: #a8b3ad;
+
+  /* BRAND */
+  --primary: #18453B;
+
+  /* ACCENTS */
+  --accent: #0B9A6D;
+  --accent-hover: #008934;
+
+  --lime: #7BBD00;
+
+  /* UI */
+  --border: rgba(255,255,255,0.08);
+
+  /* STATUS */
+  --success: #22c55e;
+  --warning: #F1BE48;
+  --danger: #C8102E;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-y: scroll;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans);
+  min-height: 100vh;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+
+
+/* Navbar Links */
+
+.nav-link {
+  font-size: 15px;
+
+  color: var(--muted);
+
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #fff;
+}
+
+.nav-auth-btn {
+  background: var(--accent);
+
+  color: white;
+
+  padding: 0.5rem 1rem;
+
+  border-radius: 0.75rem;
+
+  font-weight: 500;
+
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.12);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.nav-auth-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* LINKS */
+
+a {
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+/* BUTTONS */
+
+button {
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  cursor: pointer;
+}
+
+
+/*hero section*/
+/* HERO */
+
+.hero-section {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+  overflow: hidden;
+
+  padding-inline: 1.5rem;
+
+  background: var(--surface);
+
+  color: white;
+
+  isolation: isolate;
+}
+
+.hero-container {
+  position: relative;
+  z-index: 2;
+
+  max-width: 64rem;
+  margin-inline: auto;
+
+  text-align: center;
+
+  transform: translateY(-125px);
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  padding: 0.15rem 1rem 0.5rem 1rem;
+
+  border-radius: 999px;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  background: rgba(255,255,255,0.03);
+
+  color: var(--muted);
+
+  font-size: 0.9rem;
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+  inset 0 1px 0 rgba(255,255,255,0.08),
+  0 4px 20px rgba(0,0,0,0.12);
+}
+
+.hero-title {
+  margin-top: 1.2rem;
+
+  font-size: clamp(2rem, 4.6vw, 3.6rem);
+
+  line-height: 1.02;
+
+  font-weight: 650;
+
+  letter-spacing: -0.03em;
+}
+
+.hero-description {
+  margin-top: 2rem;
+
+  max-width: 42rem;
+  margin-inline: auto;
+
+  color: var(--muted);
+
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+
+  line-height: 1.8;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+
+  margin-top: 3rem;
+
+  flex-wrap: wrap;
+}
+
+.hero-glow {
+  position: absolute;
+
+  border-radius: 999px;
+
+  filter: blur(160px);
+
+  opacity: 0.25;
+
+  pointer-events: none;
+
+  will-change: transform;
+}
+
+.hero-glow-accent {
+  width: 500px;
+  height: 500px;
+
+  top: -120px;
+  left: -120px;
+
+  background: var(--accent);
+}
+
+.hero-glow-lime {
+  width: 420px;
+  height: 420px;
+
+  bottom: -120px;
+  right: -120px;
+
+  background: var(--lime);
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+
+  background-size: 48px 48px;
+
+  mask-image: radial-gradient(circle at center, black, transparent 75%);
+}
+
+.hero-secondary-btn {
+padding-left: 1.75rem;
+padding-right: 1.75rem;
+
+padding-top: 0.875rem;
+padding-bottom: 0.875rem;
+
+border-radius: 1rem;
+
+transition-property: all;
+transition-duration: 200ms;
+
+display: inline-flex;
+
+align-items: center;
+justify-content: center;
+
+background: rgba(255,255,255,0.04);
+
+border: 1px solid rgba(255,255,255,0.08);
+
+color: rgba(255,255,255,0.88);
+
+backdrop-filter: blur(8px);
+}
+
+.hero-secondary-btn:hover {
+  background: rgba(255,255,255,0.07);
+}
+
+/* HERO CTA CARDS */
+
+.hero-cta-card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  gap: 1rem;
+
+  padding: 1.5rem;
+
+  min-height: 180px;
+
+  border-radius: 1.75rem;
+
+  text-align: left;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.06),
+      rgba(255,255,255,0.03)
+    );
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    0 8px 32px rgba(0,0,0,0.18);
+
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    background-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.hero-cta-card:hover {
+  transform: translateY(-4px);
+
+  border-color: rgba(255,255,255,0.14);
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.08),
+      rgba(255,255,255,0.04)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 14px 42px rgba(0,0,0,0.24);
+}
+
+.hero-cta-icon {
+  width: 3rem;
+  height: 3rem;
+
+  border-radius: 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,0.06);
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  font-size: 1.25rem;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.hero-cta-card:hover .hero-cta-icon {
+  transform: scale(1.05);
+
+  background: rgba(255,255,255,0.1);
+}
+
+.hero-cta-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+
+  color: rgba(255,255,255,0.96);
+
+  letter-spacing: -0.02em;
+}
+
+.hero-cta-description {
+  margin-top: 0.45rem;
+
+  color: rgba(255,255,255,0.62);
+
+  font-size: 0.96rem;
+
+  line-height: 1.6;
+}
+
+/* for pages like paylas yorum and mulakat */
+
+.page-hero {
+  min-height: calc(100vh - 75px);
+
+  position: relative;
+
+ padding:
+    17rem 1.5rem 3rem;
+
+  background: var(--surface);
+  color: white;
+
+  overflow-x: hidden;
+}
+
+.page-hero-container {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  max-width: 64rem;
+
+  margin-inline: auto;
+}
+
+/* FORMS */
+
+input,
+textarea,
+select {
+  outline: none;
+}
+
+/* SELECTION */
+
+::selection {
+  background: var(--accent);
+  color: white;
+}
+
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2f4a42;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3d5f55;
+}
+
+/* globals.css */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Stats Circle */
+
+.stats-circle {
+  color: var(--card-green-2); /* eski text-green-500 yerine */
+}
+
+/* How It Works Cards */
+.hiw-card {
+  background-color: #446600; /* çok koyu lime / yeşil ton */
+  transition: background-color 0.3s ease;
+}
+
+.hiw-card:hover {
+  background-color: #669900; /* hover’da biraz daha parlak ve canlı */
+}
+/* Trend Sirket Bar Graph */
+.trend-bar-company {
+  /* Normal durumda gradient */
+  background: linear-gradient(to top, #0B9A6D, #7BBD00); /* Accent → Lime */
+  border-radius: 0.75rem; /* Tailwind rounded-t-xl eşdeğeri */
+  transition: transform 0.3s ease; /* hover animasyon için */
+}
+
+/* Opsiyonel: hover efekti sadece yükselme / scale */
+.trend-bar-company:hover {
+  transform: scaleY(1.01); /* hafif büyüme */
+}
+
+/* Trend Maas Bar Graph */
+.trend-bar-salary {
+  /* Normalde gradient */
+  background: linear-gradient(to top, #0B9A6D, #008934); /* koyu → açık */
+  border-radius: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+/* Hoverda sadece hafif büyüme / animasyon */
+.trend-bar-salary:hover {
+  transform: scaleY(1.01);
+}
+
+/* Son Yorumlar Card */
+.comments-card {
+  background-color: var(--card-green-3);
+  transition: background-color 0.3s ease;
+}
+.comments-card:hover {
+  background-color: var(--card-green-3-hover);
+}
+
+/* CTA Button */
+.cta-btn {
+  background-color: var(--accent);
+  transition: background-color 0.2s ease;
+}
+.cta-btn:hover {
+  background-color: var(--accent-hover);
+}
+
+/*company page*/
+/* Card light style */
+
+.card-light {
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.78),
+      rgba(255,255,255,0.68)
+    );
+
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.45);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    0 1px 2px rgba(0,0,0,0.03),
+    0 8px 24px rgba(16,24,40,0.06);
+
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.card-light:hover {
+  border-color: rgba(255,255,255,0.45);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    0 1px 2px rgba(0,0,0,0.03),
+    0 8px 24px rgba(16,24,40,0.06);
+}
+
+.card-compact {
+  padding: 1.15rem;
+}
+
+.card-compact:hover {
+  border-color: rgba(16,24,40,0.08);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.4),
+    0 2px 10px rgba(16,24,40,0.05);
+}
+
+/* Static premium wrapper */
+/* Büyük company header wrapper için */
+
+.surface-panel {
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.78),
+      rgba(255,255,255,0.68)
+    );
+
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.45);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    0 1px 2px rgba(0,0,0,0.03),
+    0 8px 24px rgba(16,24,40,0.06);
+
+  border-radius: 1rem;
+}
+/* Accent / CTA */
+.btn-accent {
+  background-color: var(--accent);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-hover);
+}
+
+/* Text */
+.text-dark {
+  color: var(--text-dark);
+}
+
+.text-muted {
+  color: var(--muted-dark);
+}
+
+/* Company Tabs */
+
+.company-tab {
+  position: relative;
+
+  display: inline-block;
+
+  padding-inline: 4px;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  color: rgba(0,0,0,0.5);
+
+  transition: color 0.18s ease;
+
+  background: transparent;
+
+  border: none;
+
+  white-space: nowrap;
+}
+
+.company-tab:hover {
+  color: rgba(0,0,0,0.85);
+}
+
+
+/* Active tab */
+
+.company-tab-active {
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.company-tab-active::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: -1px;
+
+  width: 100%;
+
+  height: 0.25rem;
+
+  border-radius: 999px;
+
+  background: var(--lime);
+
+  animation: tabBorderFade 0.18s ease;
+}
+
+/* Uneline animation */
+
+@keyframes tabBorderFade {
+  from {
+    opacity: 0;
+    transform: scaleX(0.6);
+  }
+
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+
+
+
+/* Premium Form Fields */
+.form-field {
+  height: 2.5rem;
+
+  width: 100%;
+
+  padding: 0 1rem;
+
+  border-radius: 0.5rem;
+
+  border: 1px solid rgba(0,0,0,0.06);
+
+  background: rgba(255,255,255,0.72);
+
+  color: var(--text-dark);
+
+  font-size: 0.94rem;
+
+  backdrop-filter: blur(8px);
+
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.form-field::placeholder {
+  color: var(--muted-dark);
+}
+
+.form-field:hover {
+  border-color: rgba(0,0,0,0.1);
+}
+
+.form-field:focus {
+  background: rgba(255,255,255,0.92);
+
+  border-color: rgba(11,154,109,0.28);
+
+  box-shadow:
+    0 0 0 4px rgba(11,154,109,0.08);
+}
+
+
+/* Form Shell */
+
+.form-shell {
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.78),
+      rgba(255,255,255,0.68)
+    );
+
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.45);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    0 1px 2px rgba(0,0,0,0.03),
+    0 8px 24px rgba(16,24,40,0.06);
+
+  border-radius: 1.75rem;
+
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .form-shell {
+    padding: 2rem;
+  }
+}
+
+/* Review Form */
+
+.form-section-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.form-helper {
+  margin-top: 0.2rem;
+
+  font-size: 0.78rem;
+  color: var(--muted-dark);
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  color: var(--text-dark);
+}
+
+
+/* Clean Form Buttons */
+
+/* Form Navigation */
+
+.form-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 2.2rem;
+
+  padding: 0 1.1rem;
+
+  border-radius: 10px;
+
+  border: 1px solid rgba(255,255,255,0.04);
+
+  background: var(--surface);
+
+  color: rgba(255,255,255,0.92);
+
+  font-size: 0.8rem;
+  font-weight: 450;
+  letter-spacing: 0.01em;
+
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.form-btn:hover {
+  background: var(--surface-2);
+
+  transform: translateY(-1px);
+}
+
+.form-btn-secondary {
+  background: rgba(0,0,0,0.05);
+
+  color: var(--muted-dark);
+}
+
+.form-btn-secondary:hover {
+  background: rgba(0,0,0,0.08);
+
+  color: var(--text-dark);
+}
+
+/* Form Entry Fields */
+
+
+
+textarea.form-field {
+  min-height: 80px;
+  max-height: 220px;
+
+  resize: vertical;
+}
+
+/* form error message*/
+.form-error {
+  @apply rounded-md border border-red-500/20 bg-red-500/10 px-2 text-sm text-red-500;
+}
+
+/* Rating Pills */
+
+.rating-pill {
+  height: 2.5rem;
+  width: 2.5rem;
+
+  border-radius: 1rem;
+
+  border: 1px solid rgba(0,0,0,0.05);
+
+  background: rgba(255,255,255,0.72);
+
+  color: var(--muted-dark);
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  backdrop-filter: blur(8px);
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.rating-pill:hover {
+  border-color: rgba(11,154,109,0.18);
+
+  color: var(--text-dark);
+
+  transform: translateY(-1px);
+}
+
+.rating-pill-active {
+  background: rgba(11,154,109,0.1);
+
+  border-color: rgba(11,154,109,0.24);
+
+  color: var(--text-dark);
+
+  box-shadow:
+    0 4px 12px rgba(11,154,109,0.08);
+
+  transform: scale(1.03);
+}
+
+/* Back Navigation Button */
+
+.back-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  height: 2.2rem;
+
+  padding: 0 0.8rem;
+
+  border-radius: 0.8rem;
+
+  background: transparent;
+
+  color: var(--muted-dark);
+
+  font-size: 0.88rem;
+  font-weight: 500;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.back-nav-btn:hover {
+  background: rgba(0,0,0,0.035);
+
+  color: var(--text-dark);
+
+  transform: translateX(-1px);
+}
+
+/* conpany tabs Yorumlara Don, Maasa Don vs butonlar */
+.company-cta-btn {
+  height: 2.5rem;
+
+  padding: 0 0.9rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+
+  border-radius: 0.7rem;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  transition: all 0.2s ease;
+}
+
+.company-cta-back {
+  background: rgba(255,255,255,0.18);
+
+  border: 1px solid rgba(255,255,255,0.35);
+
+  backdrop-filter: blur(10px);
+
+  color: var(--text-dark);
+}
+
+/* Select dropdown polish */
+
+select.form-field {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  cursor: pointer;
+
+  background-color: rgba(255,255,255,0.72);
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 8 10 12 14 8'/%3E%3C/svg%3E");
+
+  background-repeat: no-repeat;
+
+  background-position: right 14px center;
+
+  background-size: 16px;
+
+  padding-right: 42px;
+}
+
+select.form-field:hover {
+  background-color: rgba(255,255,255,0.82);
+}
+
+/* Dropdown options */
+
+select.form-field option {
+  color: var(--text-dark);
+  background: white;
+}
+
+
+/* Profile Dropdown */
+
+.profile-dropdown {
+  position: absolute;
+
+  right: -2.1rem;
+  top: 2.6rem;
+
+  min-width: 160px;
+
+  padding: 0.35rem;
+
+  border-radius: 0.85rem;
+
+  border: 1px solid rgba(255,255,255,0.05);
+
+  background: rgba(28,28,28,0.82);
+
+  backdrop-filter: blur(24px);
+
+  box-shadow:
+    0 8px 28px rgba(0,0,0,0.12);
+
+  z-index: 50;
+}
+
+.profile-menu-item {
+  display: block;
+
+  width: 100%;
+
+  padding: 0.4rem 0.7rem;
+
+  border-radius: 0.6rem;
+
+  text-align: left;
+
+  font-size: 13px;
+
+  color: rgba(255,255,255,0.82);
+
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.profile-menu-item:hover {
+  color: white;
+
+  background: rgba(255,255,255,0.04);
+}
+
+.profile-menu-item-danger {
+  color: rgba(252,165,165,0.92);
+}
+
+.profile-menu-item-danger:hover {
+  color: rgb(254,202,202);
+
+  background: rgba(239,68,68,0.08);
+}
+
+.avatar-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  border: 1px solid rgba(255,255,255,0.1);
+
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.avatar-btn:hover {
+  border-color: rgba(255,255,255,0.2);
+
+  transform: scale(1.03);
+}
+
+
+/* login ve register auth from*/
+.auth-input {
+  width: 100%;
+
+  border: 1px solid var(--border);
+
+  background: var(--surface-2);
+
+  border-radius: 0.9rem;
+
+  padding:
+    0.75rem 1rem;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.auth-input:focus {
+  border-color: var(--accent);
+}
+
+.auth-submit-btn {
+  width: 100%;
+
+  border-radius: 0.9rem;
+
+  background: white;
+
+  padding:
+    0.75rem 1rem;
+
+  font-weight: 500;
+
+  color: black;
+
+  transition:
+    opacity 0.2s ease;
+}
+
+.auth-submit-btn:hover {
+  opacity: 0.9;
+}
+
+.auth-label {
+  display: block;
+
+  margin-bottom: 0.5rem;
+
+  font-size: 0.875rem;
+}
+/* ctabutton gelip paylas yorum ve mulakat sayfalari icin ayrica sirket specific sayflar icin */
+
+.app-page {
+  min-height: calc(100vh - 75px);
+  position: relative;
+
+  padding:
+    0.3rem
+    1.5rem
+    5rem;
+
+  background: var(--background);
+
+  color: var(--text-dark);
+
+  overflow-x: hidden;
+}
+
+.app-page::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(
+      circle at top center,
+      rgba(16, 185, 129, 0.05),
+      transparent 40%
+    );
+
+  pointer-events: none;
+}
+
+.app-page-container {
+  width: 100%;
+  max-width: 64rem;
+
+  position: relative;
+  z-index: 1;
+
+  
+  margin-inline: auto;
+}
+
+/*Share page minimal nav */
+.share-tab-minimal {
+  position: relative;
+
+  display: inline-block;
+
+  padding-inline: 4px;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  color: rgba(0,0,0,0.5);
+
+  transition:
+    color 0.18s ease;
+}
+
+.share-tab-minimal:hover {
+  color: rgba(0,0,0,0.85);
+}
+
+.share-tab-minimal-active {
+  color: var(--text-dark);
+
+  font-weight: 500;
+}
+
+.share-tab-minimal-active::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: -1px;
+
+  width: 100%;
+
+  height: 0.25rem;
+
+  border-radius: 999px;
+
+  background: var(--lime);
+
+  animation: tabBorderFade 0.18s ease;
+}
+
+/* form submission confirmation */
+
+.form-success-card {
+  border: 1px solid rgba(34,197,94,0.25);
+  background: rgba(34,197,94,0.08);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+}
+
+.form-success-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.form-success-message {
+  color: var(--muted-dark);
+  line-height: 1.6;
+}
+
+.form-success-icon {
+  color: #22c55e;
+  margin-bottom: 1rem;
+}
