@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import CompanyTabsNav from "./CompanyTabsNav";
 import CompanyTabs from "./CompanyTabs";
-import CompanyOverviewBars from "./CompanyOverviewBars";
 
 export default function CompanyPageClient({
   company,
@@ -14,9 +13,6 @@ export default function CompanyPageClient({
   hqCity,
   children,
   initialTab,
-  subRatingAverages,
-  salaryRange,
-  reviewCount,
 }: {
   company: any;
   reviews: any[];
@@ -26,16 +22,6 @@ export default function CompanyPageClient({
   hqCity: number;
   children: React.ReactNode;
   initialTab?: string;
-  subRatingAverages: {
-    work_life_balance: number;
-    management: number;
-    career_growth: number;
-    work_environment: number;
-    transparency: number;
-    employee_value: number;
-  };
-  salaryRange: { min: number; max: number } | null;
-  reviewCount: number;
 })
 
 {
@@ -73,12 +59,6 @@ export default function CompanyPageClient({
     />
 
     {children}
-
-    <CompanyOverviewBars
-      subRatingAverages={subRatingAverages}
-      salaryRange={salaryRange}
-      reviewCount={reviewCount}
-    />
 
     <CompanyTabs
       companyId={companyId}

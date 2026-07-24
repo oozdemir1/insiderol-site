@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import SalaryCard from "@/components/SalaryCard";
+import ReviewRatingBars from "./CompanyOverviewBars";
 import ReviewFormSteps from "./forms/ReviewFormSteps";
 import SalaryForm from "./forms/SalaryForm";
 import WorkStyleForm from "./forms/WorkStyleForm";
@@ -464,6 +465,29 @@ const isAnyFormOpen =
                     />
                   ) : (
                     <>
+                     {filteredSalaries.length > 0 && (
+                       <div className="card-light rounded-2xl p-4 mb-4 flex items-center justify-between">
+                         <span className="text-sm text-[var(--text-dark)]">
+                           Maaş Aralığı
+                         </span>
+
+                         <span className="text-sm font-semibold text-[var(--accent)]">
+                           ₺
+                           {Math.min(
+                             ...filteredSalaries.map(
+                               (s) => Number(s.salary) || 0
+                             )
+                           ).toLocaleString("tr-TR")}{" "}
+                           - ₺
+                           {Math.max(
+                             ...filteredSalaries.map(
+                               (s) => Number(s.salary) || 0
+                             )
+                           ).toLocaleString("tr-TR")}
+                         </span>
+                       </div>
+                     )}
+
                      {salaries?.length > 0 && (
                       <div className="flex items-center justify-between gap-3 mb-4">
                         {salaryRoleFilterApplicable ? (
@@ -520,6 +544,8 @@ const isAnyFormOpen =
 
        {currentActiveTab === "yorum" && (
             <div className="flex flex-col gap-4">
+
+                <ReviewRatingBars reviews={processedReviews} />
 
                 {processedReviews.length === 0 && (
                   <ContentEmptyState

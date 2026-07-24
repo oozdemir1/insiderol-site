@@ -122,39 +122,6 @@ const { data: salaries } = await supabase
         )
         : 0;
 
-  const salaryRange =
-    numericSalaries.length > 0
-      ? {
-          min: Math.min(...numericSalaries),
-          max: Math.max(...numericSalaries),
-        }
-      : null;
-
-  // Averages for the 6 review sub-ratings, used by the numeric overview
-  // bars — computed from already-fetched data instead of a second query.
-  const subRatingFields = [
-    "work_life_balance",
-    "management",
-    "career_growth",
-    "work_environment",
-    "transparency",
-    "employee_value",
-  ] as const;
-
-  const subRatingAverages = Object.fromEntries(
-    subRatingFields.map((field) => {
-      const average =
-        reviews && reviews.length > 0
-          ? reviews.reduce(
-              (acc, curr) => acc + (curr[field] || 0),
-              0
-            ) / reviews.length
-          : 0;
-
-      return [field, average];
-    })
-  ) as Record<(typeof subRatingFields)[number], number>;
-
   const initialTab = (
     VALID_TABS as readonly string[]
   ).includes(tab || "")
@@ -251,23 +218,19 @@ const companyCityName =
         companyName={company.name}
         hqCity={company.hq_city}
         initialTab={initialTab}
-        subRatingAverages={subRatingAverages}
-        salaryRange={salaryRange}
-        reviewCount={reviews?.length || 0}
       >
 
      
     {/* Unified Header + Content Card */}
 <div
   className="
-  bg-gradient-to-br
-    border border-black/10
     bg-gradient-to-br
+    border border-black/10
    from-white
     via-zinc-50
     to-zinc-100
     rounded-[0.75rem]
-    p-3 md:p-5    
+    p-3 md:p-5
   "
 >
  {/* Page Header */}
@@ -302,7 +265,7 @@ const companyCityName =
         {/* Stats Cards */}
         <div className="flex-1 flex flex-col md:items-start items-center gap-4">
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
 
             <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
               <p className="text-[var(--text-dark)] text-[20px] font-semibold tracking-tight leading-none">
@@ -311,15 +274,9 @@ const companyCityName =
               <span className="text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
                 Ortalama Puan
               </span>
-            </div>
-
-            <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
-              <div className="text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
-                {totalSalaries}
-              </div>
-              <p className="text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
-                Maaş Paylaşımı
-              </p>
+              <span className="text-[11px] text-[var(--muted-dark)]/70">
+                {reviews?.length || 0} değerlendirme
+              </span>
             </div>
 
             <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
@@ -329,19 +286,13 @@ const companyCityName =
               <p className="text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
                 Ortalama Maaş
               </p>
-            </div>
-
-            <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
-              <div className="text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
-                {reviews?.length}
-              </div>
-              <p className="text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
-                Değerlendirme
-              </p>
+              <span className="text-[11px] text-[var(--muted-dark)]/70">
+                {totalSalaries} paylaşım
+              </span>
             </div>
 
             <div className="card-light card-compact flex flex-col items-center justify-center gap-3 text-center">
-              <div className="text-[18px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
+              <div className="text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
                 {companyCityName}
               </div>
               <p className="text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-1">
