@@ -4,12 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, Ghost } from "lucide-react";
 import { formatRelativeTime } from "@/app/constants/formatRelativeTime";
-import { turkishCities } from "@/app/constants/turkishCities";
-import { experienceLevels } from "@/app/constants/experienceLevels";
 import {
   getEmploymentStatusLabel,
   renderStars,
 } from "@/app/constants/reviewLabels";
+import {
+  getExperienceYearsLabel,
+  getCityName,
+} from "@/app/constants/lookupHelpers";
 import {
   SENIORITY_LABELS,
   PROCESS_LENGTH_LABELS,
@@ -68,12 +70,6 @@ const TAB_BY_KIND: Record<FeedItem["kind"], string> = {
   review: "yorum",
   interview: "mülakat süreci",
 };
-
-const getExperienceYearsLabel = (value?: number | null) =>
-  experienceLevels.find((level) => level.id === value)?.name || "-";
-
-const getCityName = (cityId?: number | null) =>
-  turkishCities.find((city) => city.id === cityId)?.name || "-";
 
 export default function FeedCard({ item }: { item: FeedItem }) {
   const [expanded, setExpanded] = useState(false);

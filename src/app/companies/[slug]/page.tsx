@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { turkishCities } from "@/app/constants/turkishCities";
 import CompanyPageClient from "@/components/CompanyPageClient";
 
@@ -23,6 +24,10 @@ export async function generateMetadata({
     .eq("slug", slug)
     .single();
 
+  if (!company) {
+    return { title: "Şirket bulunamadı | insiderol" };
+  }
+
   return {
     title: `${company.name} Maaşları ve Çalışan Yorumları | insiderol`,
 
@@ -31,6 +36,15 @@ export async function generateMetadata({
   };
 }
 
+
+const VALID_TABS = [
+  "yorum",
+  "maaş",
+  "çalışma biçimi",
+  "yan hak",
+  "ücret politikası",
+  "mülakat süreci",
+] as const;
 
 export default async function CompanyPage({
   params,
@@ -47,25 +61,30 @@ export default async function CompanyPage({
 
   const companyName =
     slug.charAt(0).toUpperCase() + slug.slice(1);
-  
+
   const { data: company } = await supabase
     .from("companies")
     .select("*")
     .eq("slug", slug)
     .single();
 
+  if (!company) {
+    notFound();
+  }
+
 const { data: salaries } = await supabase
   .from("salaries")
-  .select("*")
+  .select("*, roles(name)")
   .eq("company_id", company.id)
   .eq("moderation_status", "approved")
   .eq("role_status", "approved")
-  .eq("company_status", "approved");
+  .eq("company_status", "approved")
+  .order("created_at", { ascending: false });
 
-    
+
     const { data: reviews } = await supabase
       .from("company_reviews")
-      .select("*")
+      .select("*, roles(name)")
       .eq("company_id", company.id)
       .eq(
         "moderation_status",
@@ -103,32 +122,122 @@ const { data: salaries } = await supabase
         )
         : 0;
 
-  const salaryRisePolicyLabels: Record<string, string> = {
-  yearly: "Yılda 1 kez",
-  every_6_months: "6 ayda 1",
-  inflation_based: "Enflasyon bazlı",
-  performance_based: "Performans bazlı",
-  minimum_wage_based: "Asgari ücret bazlı",
-  irregular: "Düzensiz",
-  no_raise: "Zam yapılmıyor",
-}; 
+  const salaryRange =
+    numericSalaries.length > 0
+      ? {
+          min: Math.min(...numericSalaries),
+          max: Math.max(...numericSalaries),
+        }
+      : null;
 
-  const overtimePolicyLabels: Record<string, string> = {
-  none: "Mesai yok",
-  rare: "Nadiren mesai",
-  sometimes: "Ara sıra mesai",
-  frequent: "Sık mesai",
-  constant: "Sürekli mesai",
-  weekend_common: "Hafta sonu çalışması yaygın",
-};
+  // Averages for the 6 review sub-ratings, used by the numeric overview
+  // bars — computed from already-fetched data instead of a second query.
+  const subRatingFields = [
+    "work_life_balance",
+    "management",
+    "career_growth",
+    "work_environment",
+    "transparency",
+    "employee_value",
+  ] as const;
+
+  const subRatingAverages = Object.fromEntries(
+    subRatingFields.map((field) => {
+      const average =
+        reviews && reviews.length > 0
+          ? reviews.reduce(
+              (acc, curr) => acc + (curr[field] || 0),
+              0
+            ) / reviews.length
+          : 0;
+
+      return [field, average];
+    })
+  ) as Record<(typeof subRatingFields)[number], number>;
+
+  const initialTab = (
+    VALID_TABS as readonly string[]
+  ).includes(tab || "")
+    ? (tab as (typeof VALID_TABS)[number])
+    : "yorum";
 
 const companyCityName =
   turkishCities.find(
     (city) => city.id === company.hq_city
   )?.name || "Bilinmiyor";
 
+  // Logo/website may each be missing independently (most companies are
+  // approved without either — see admin/moderation's approve flow), so
+  // render whichever combination is available instead of hiding the whole
+  // block when only one is set.
+  const logoBox = (
+    <div
+      className="
+        relative z-10
+        w-24 h-24 rounded-3xl
+        bg-white
+        border border-black/5
+        shadow-[0_1px_2px_rgba(0,0,0,0.03)]
+        flex items-center justify-center
+        overflow-hidden
+      "
+    >
+      {company.logo_url ? (
+        <img
+          src={company.logo_url}
+          alt={company.name}
+          className="w-24 h-24 object-contain"
+        />
+      ) : (
+        <span className="text-3xl font-semibold text-[var(--accent)]">
+          {company.name?.charAt(0).toUpperCase()}
+        </span>
+      )}
+    </div>
+  );
+
+  const logoContent = company.website ? (
+    <a
+      href={company.website}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-block relative"
+    >
+      {logoBox}
+    </a>
+  ) : (
+    logoBox
+  );
+
+  // Only emit a rating snippet when real reviews back it — an
+  // aggregateRating with zero underlying reviews violates Google's
+  // structured-data guidelines and can get the markup penalized.
+  const structuredDataJson =
+    reviews && reviews.length > 0
+      ? JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: company.name,
+          ...(company.website ? { url: company.website } : {}),
+          ...(company.logo_url ? { logo: company.logo_url } : {}),
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: averageReviewRating,
+            reviewCount: reviews.length,
+            bestRating: "5",
+            worstRating: "1",
+          },
+        }).replace(/</g, "\\u003c")
+      : null;
+
   return (
     <>
+{structuredDataJson && (
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{ __html: structuredDataJson }}
+  />
+)}
 <main
   style={{ backgroundColor: "var(--background)" }}
   className="h-auto text-[var(--text-dark)] pt-0 px-4 pb-20 relative z-0"
@@ -137,10 +246,14 @@ const companyCityName =
       <CompanyPageClient
         company={company}
         reviews={reviews || []}
+        salaries={salaries || []}
         companyId={company.id}
         companyName={company.name}
         hqCity={company.hq_city}
-        initialTab={tab === "maaş" ? "maaş" : "yorum"}
+        initialTab={initialTab}
+        subRatingAverages={subRatingAverages}
+        salaryRange={salaryRange}
+        reviewCount={reviews?.length || 0}
       >
 
      
@@ -181,32 +294,7 @@ const companyCityName =
 
         {/* Logo */}
         <div className="flex-shrink-0 self-center text-center md:text-left relative mb-6 md:mb-0">
-          {company.logo_url && company.website && (
-            <a
-              href={company.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block relative"
-            >
-              <div
-                className="
-                  relative z-10
-                  w-24 h-24 rounded-3xl
-                  bg-white
-                  border border-black/5
-                  shadow-[0_1px_2px_rgba(0,0,0,0.03)]
-                  flex items-center justify-center
-                  overflow-hidden
-                "
-              >
-                <img
-                  src={company.logo_url}
-                  alt={company.name}
-                  className="w-24 h-24 object-contain"
-                />
-              </div>
-            </a>
-          )}
+          {logoContent}
         </div>
 
         <div className="hidden md:block w-px h-15 self-center bg-black/10" />

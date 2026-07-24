@@ -5,12 +5,12 @@ import SalaryCard from "@/components/SalaryCard";
 
 // Demo salary verisi
 const demoSalaries = [
-  { logo: "/logos/trendyol.png", company: "Trendyol", role: "Frontend Developer", salary: "15.000 TL", location: "Istanbul", type: "Full-time" },
-  { logo: "/logos/getir.png", company: "Getir", role: "Backend Developer", salary: "14.500 TL", location: "Istanbul", type: "Full-time" },
-  { logo: "/logos/insider.png", company: "Insider", role: "Fullstack Developer", salary: "16.000 TL", location: "Istanbul", type: "Full-time" },
-  { logo: "/logos/shipper.png", company: "Shipper", role: "Data Analyst", salary: "13.500 TL", location: "Istanbul", type: "Full-time" },
-  { logo: "/logos/mavi.png", company: "Mavi", role: "UI Designer", salary: "12.000 TL", location: "Istanbul", type: "Full-time" },
-  { logo: "/logos/obi.png", company: "OBI", role: "Project Manager", salary: "17.000 TL", location: "Istanbul", type: "Full-time" },
+  { role: "Frontend Developer", salary: 15000, experienceLabel: "3-5 yıl", cityLabel: "İstanbul" },
+  { role: "Backend Developer", salary: 14500, experienceLabel: "1-3 yıl", cityLabel: "İstanbul" },
+  { role: "Fullstack Developer", salary: 16000, experienceLabel: "3-5 yıl", cityLabel: "İstanbul" },
+  { role: "Data Analyst", salary: 13500, experienceLabel: "1-3 yıl", cityLabel: "İstanbul" },
+  { role: "UI Designer", salary: 12000, experienceLabel: "0-1 yıl", cityLabel: "İstanbul" },
+  { role: "Project Manager", salary: 17000, experienceLabel: "5-7 yıl", cityLabel: "İstanbul" },
 ];
 
 export default function SalaryPreviewCarousel() {
@@ -103,12 +103,10 @@ export default function SalaryPreviewCarousel() {
                 className="flex-shrink-0 w-[calc(25%-1.5rem)] md:w-[calc(20%-1.5rem)] snap-start"
               >
                 <SalaryCard
-                  logo={salary.logo}
-                  company={salary.company}
                   role={salary.role}
                   salary={salary.salary}
-                  location={salary.location}
-                  type={salary.type}
+                  experienceLabel={salary.experienceLabel}
+                  cityLabel={salary.cityLabel}
                 />
               </div>
             ))}

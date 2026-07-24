@@ -12,7 +12,8 @@ export default function CompanyTabsNav({
               z-40
               bg-[var(--background)]
               pt-4
-              pb-8
+              pb-2
+              mb-7
              "
           >
             <div
