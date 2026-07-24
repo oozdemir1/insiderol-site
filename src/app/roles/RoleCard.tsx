@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { slugifyText } from "@/app/constants/normalizationUtils";
 
 type RoleCardProps = {
   role: {
@@ -22,7 +23,7 @@ export default function RoleCard({
   return (
 
 <Link
-  href={`/roles/${role.id}`}
+  href={`/roles/${role.id}-${slugifyText(role.name)}`}
   className="block"
 >
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { normalizeSearchText } from "@/app/constants/normalizationUtils";
+import { normalizeSearchText, slugifyText } from "@/app/constants/normalizationUtils";
 import { Search, X } from "lucide-react";
 
 type CompanyResult = { id: number; name: string; slug: string };
@@ -161,7 +161,7 @@ export default function CompanySearch() {
               {roles.map((role) => (
                 <Link
                   key={role.id}
-                  href={`/roles/${role.id}`}
+                  href={`/roles/${role.id}-${slugifyText(role.name)}`}
                   onClick={() => setShowDropdown(false)}
                   className="block px-4 py-3 hover:bg-white/5 transition border-b border-white/5 last:border-0"
                 >

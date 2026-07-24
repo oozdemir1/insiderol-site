@@ -26,7 +26,7 @@ export async function generateMetadata({
   const { data: role } = await supabase
     .from("roles")
     .select("name")
-    .eq("id", Number(id))
+    .eq("id", parseInt(id, 10))
     .maybeSingle();
 
   return {
@@ -46,7 +46,7 @@ export default async function RolePage({
 }: RolePageProps) {
 
   const { id } = await params;
-  const roleId = Number(id);
+  const roleId = parseInt(id, 10);
 
   const { experience, city, year, view } = await searchParams;
 
