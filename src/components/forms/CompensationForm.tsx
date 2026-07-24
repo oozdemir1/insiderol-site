@@ -460,6 +460,11 @@ if (
         source_type: "compensation",
 
         submission_count: 1,
+
+        website:
+          formData.companyWebsite?.trim() || null,
+
+        hq_city: formData.hqCity,
       });
   }
 }

@@ -418,6 +418,11 @@ if (
         source_type: "work_style",
 
         submission_count: 1,
+
+        website:
+          formData.companyWebsite?.trim() || null,
+
+        hq_city: formData.hqCity,
       });
   }
 }

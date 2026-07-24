@@ -520,6 +520,11 @@ if (
         source_type: "interview",
 
         submission_count: 1,
+
+        website:
+          formData.companyWebsite?.trim() || null,
+
+        hq_city: formData.hqCity,
       });
   }
 }

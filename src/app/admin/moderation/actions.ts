@@ -156,7 +156,13 @@ const { data: pendingRole } =
 
 export async function approveCompany(
   pendingCompanyId: number,
-  companyName: string
+  companyName: string,
+  details: {
+    website: string | null;
+    hqCity: number | null;
+    industry: number | null;
+    logoUrl: string | null;
+  }
 ) {
   const supabase =
     await createClient();
@@ -179,6 +185,21 @@ export async function approveCompany(
   if (!profile?.is_admin) {
     throw new Error("Unauthorized");
   }
+
+  // The moderated tables (salaries, reviews, ...) still carry whatever
+  // name the submitter originally typed in pending_company_name — the
+  // admin may have just corrected companyName in this same submit, so
+  // match those rows against the original suggested_name, not the
+  // (possibly just-edited) companyName.
+  const { data: pendingCompany } =
+    await supabase
+      .from("pending_companies")
+      .select("suggested_name")
+      .eq("id", pendingCompanyId)
+      .single();
+
+  const originalSuggestedName =
+    pendingCompany?.suggested_name ?? companyName;
 
   const slug =
     slugifyCompanyName(
@@ -208,6 +229,10 @@ export async function approveCompany(
           companyName
         ),
         slug,
+        website: details.website,
+        hq_city: details.hqCity,
+        industry: details.industry,
+        logo_url: details.logoUrl,
       })
       .select("id")
       .single();
@@ -235,7 +260,7 @@ export async function approveCompany(
         })
         .eq(
           "pending_company_name",
-          companyName
+          originalSuggestedName
         )
         .eq(
           "company_status",
@@ -254,6 +279,7 @@ export async function approveCompany(
       .from("pending_companies")
       .update({
         status: "approved",
+        company_id: companyId,
       })
       .eq("id", pendingCompanyId);
 
@@ -266,6 +292,73 @@ export async function approveCompany(
   revalidatePath(
     "/admin/moderation"
   );
+}
+
+// Fixes a mistake on an already-approved company (wrong sector, broken
+// logo link, typo'd name, etc.) — the only path for that today is editing
+// the companies row by hand in Supabase. Deliberately does NOT recompute
+// slug from a name change: the slug is the company page's URL, and quietly
+// changing it on a name edit could break links already shared/indexed.
+export async function updateCompany(
+  companyId: number,
+  details: {
+    name: string;
+    website: string | null;
+    hqCity: number | null;
+    industry: number | null;
+    logoUrl: string | null;
+  }
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: profile } =
+    await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single();
+
+  if (!profile?.is_admin) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data, error } =
+    await supabase
+      .from("companies")
+      .update({
+        name: details.name,
+        search_name: normalizeSearchText(details.name),
+        website: details.website,
+        hq_city: details.hqCity,
+        industry: details.industry,
+        logo_url: details.logoUrl,
+      })
+      .eq("id", companyId)
+      .select();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  // A silently-matched-0-rows update (RLS filtering the row instead of
+  // erroring) is the failure mode this table has already bitten us with
+  // once — fail loudly instead of pretending the save worked.
+  if (!data || data.length === 0) {
+    throw new Error(
+      "updateCompany: 0 rows updated (muhtemelen RLS engelledi)"
+    );
+  }
+
+  revalidatePath("/admin/moderation");
+  revalidatePath("/companies");
 }
 
 export async function rejectRole(
@@ -483,83 +576,6 @@ const { data: pendingRole } =
   }
 }
 }
-
-  revalidatePath(
-    "/admin/moderation"
-  );
-}
-
-export async function updatePendingCompany(
-  pendingCompanyId: number,
-  suggestedName: string
-) {
-  const supabase =
-    await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error("Unauthorized");
-  }
-
-  const { data: profile } =
-    await supabase
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .single();
-
-  if (!profile?.is_admin) {
-    throw new Error("Unauthorized");
-  }
-
-  const { data: pendingCompany } =
-    await supabase
-      .from("pending_companies")
-      .select("suggested_name")
-      .eq("id", pendingCompanyId)
-      .single();
-
-  const { error } =
-    await supabase
-      .from("pending_companies")
-      .update({
-        suggested_name:
-          suggestedName.trim(),
-      })
-      .eq("id", pendingCompanyId);
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (
-    pendingCompany?.suggested_name &&
-    pendingCompany.suggested_name !==
-      suggestedName.trim()
-  ) {
-    for (const table of MODERATED_TABLES) {
-      const { error } =
-        await supabase
-          .from(table)
-          .update({
-            pending_company_name:
-              suggestedName.trim(),
-          })
-          .eq(
-            "pending_company_name",
-            pendingCompany.suggested_name
-          );
-
-      if (error) {
-        throw new Error(
-          error.message
-        );
-      }
-    }
-  }
 
   revalidatePath(
     "/admin/moderation"

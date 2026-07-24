@@ -461,6 +461,11 @@ if (isNewCompany) {
         source_type: "salary",
 
         submission_count: 1,
+
+        website:
+          formData.companyWebsite?.trim() || null,
+
+        hq_city: formData.hqCity,
       });
 
   }
