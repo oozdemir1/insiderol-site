@@ -14,6 +14,18 @@ type Props<T extends number | string> = {
   options: SelectOption<T>[];
   placeholder?: string;
   className?: string;
+  // For dropdowns that always have a value selected (a sort/view mode
+  // rather than a filter, e.g. never null) — the trigger shows a chevron
+  // while at this value and only switches to a clearable "X" once the
+  // user picks something else, instead of showing X from the start.
+  defaultValue?: T;
+  // Also renders the label muted while at defaultValue, not just the
+  // chevron — for a default that means "no filter" (e.g. Explore's
+  // "Tümü", implemented as a real option instead of null so it can sit
+  // in the same options list as the others). Leave false for a sort/view
+  // default like "Maaş En Yüksek -> Düşük", which represents a real
+  // active choice and should look selected even at rest.
+  mutedAtDefault?: boolean;
 };
 
 export default function SelectDropdown<T extends number | string>({
@@ -22,6 +34,8 @@ export default function SelectDropdown<T extends number | string>({
   options,
   placeholder = "Seç",
   className,
+  defaultValue,
+  mutedAtDefault = false,
 }: Props<T>) {
   const [showDropdown, setShowDropdown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -44,21 +58,22 @@ export default function SelectDropdown<T extends number | string>({
   }, []);
 
   const selected = options.find((option) => option.value === value);
+  const isAtDefault = defaultValue !== undefined && value === defaultValue;
+  const showClear = selected !== undefined && !isAtDefault;
+  const isMuted = !selected || (mutedAtDefault && isAtDefault);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className={`relative ${className || ""}`}>
       <button
         type="button"
         onClick={() => setShowDropdown((prev) => !prev)}
-        className={`form-field flex items-center justify-between gap-2 text-left ${
-          className || ""
-        }`}
+        className="form-field w-full flex items-center justify-between gap-2 text-left"
       >
-        <span className={selected ? "" : "text-[var(--muted-dark)]"}>
+        <span className={isMuted ? "text-[var(--muted-dark)]" : ""}>
           {selected ? selected.label : placeholder}
         </span>
 
-        {selected ? (
+        {showClear ? (
           <span
             role="button"
             aria-label="Temizle"
@@ -66,7 +81,7 @@ export default function SelectDropdown<T extends number | string>({
               // Clearing shouldn't also toggle the dropdown open —
               // this sits inside the trigger button, not beside it.
               e.stopPropagation();
-              onChange(null);
+              onChange(defaultValue !== undefined ? defaultValue : null);
               setShowDropdown(false);
             }}
             className="shrink-0 text-black/40 hover:text-black/70"

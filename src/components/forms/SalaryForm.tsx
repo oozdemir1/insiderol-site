@@ -422,6 +422,15 @@ if (existingPending) {
         submission_count: 1,
       });
 
+  // If this insert silently fails, the salary row below still gets
+  // submitted with pending_role_name set — but with no matching
+  // pending_roles row, an admin has nothing to approve and it's
+  // orphaned forever. Fail the whole submission instead.
+  if (error) {
+    console.warn(error);
+    setSubmitError(translateSubmissionError(error.message));
+    return;
+  }
 }
 }
 
@@ -450,7 +459,7 @@ if (isNewCompany) {
 
   } else {
 
-    await supabase
+    const { error: pendingCompanyError } = await supabase
       .from("pending_companies")
       .insert({
         suggested_name:
@@ -468,6 +477,13 @@ if (isNewCompany) {
         hq_city: formData.hqCity,
       });
 
+    // Same reasoning as the pending_roles insert above — an orphaned
+    // suggestion here can never be approved by an admin.
+    if (pendingCompanyError) {
+      console.warn(pendingCompanyError);
+      setSubmitError(translateSubmissionError(pendingCompanyError.message));
+      return;
+    }
   }
 }
 

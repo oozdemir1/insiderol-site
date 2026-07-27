@@ -159,10 +159,6 @@ const averageReviewRating =
   </div>
 </div>
   </div>
-
-   <div className="absolute top-4 right-4">
-    <BadgeCheck />
-  </div>
 </Link>
 
   );

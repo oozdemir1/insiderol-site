@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/server";
+import type { Metadata } from "next";
 import RolesList from "./RolesList";
 import SortDropdown from "./SortDropdown";
 import RoleSearchBar from "./RoleSearchBar";
@@ -6,6 +7,15 @@ import Pagination from "@/components/Pagination";
 import { normalizeSearchText } from "../constants/normalizationUtils";
 
 const PAGE_SIZE = 24;
+
+export const metadata: Metadata = {
+  title: "Pozisyonlar",
+  description:
+    "Pozisyona göre şirketleri karşılaştır: anonim maaş, değerlendirme ve çalışma şekli verileriyle.",
+  alternates: {
+    canonical: "/roles",
+  },
+};
 
 export default async function RolesPage({
   searchParams,
@@ -154,9 +164,15 @@ export default async function RolesPage({
     Math.ceil(rolesWithStats.length / PAGE_SIZE)
   );
 
+  // A stale ?page= (e.g. carried over from a broader search/sort into a
+  // narrower one via RoleSearchBar/SortDropdown, both of which preserve
+  // the existing page param) would otherwise return an empty slice with
+  // no way back — clamp to the real last page instead.
+  const clampedPage = Math.min(currentPage, totalPages);
+
   const pagedRoles = rolesWithStats.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
+    (clampedPage - 1) * PAGE_SIZE,
+    clampedPage * PAGE_SIZE
   );
 
   return (
@@ -206,7 +222,7 @@ export default async function RolesPage({
 
         <Pagination
           basePath="/roles"
-          currentPage={currentPage}
+          currentPage={clampedPage}
           totalPages={totalPages}
           searchParams={{ q, sort }}
         />

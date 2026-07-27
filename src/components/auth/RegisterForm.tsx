@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import {
@@ -24,6 +25,7 @@ export default function RegisterForm() {
     password?: string;
   }>({});
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
 
   const translateAuthError = (message: string) => {
@@ -68,6 +70,11 @@ export default function RegisterForm() {
     return;
   }
 
+  if (!agreedToTerms) {
+    setErrorMessage("Devam etmek için Kullanım Şartları ve Gizlilik Politikası'nı kabul etmelisin.");
+    return;
+  }
+
   setLoading(true);
 
   const cleanUsername = username.trim().toLowerCase();
@@ -105,13 +112,47 @@ export default function RegisterForm() {
 
   if (data.user) {
 
-  await supabase
+  const { error: profileError } = await supabase
     .from("profiles")
     .insert({
       id: data.user.id,
       username: cleanUsername,
       email,
     });
+
+  if (profileError) {
+    console.error(profileError);
+
+    // Without a profile row this account can never log in (username
+    // lookup finds nothing) and the email/username are now stuck as
+    // "taken" — roll the auth user back so they can just try again.
+    // fetch() rejects on a real network failure (not just a non-2xx
+    // status) — without this try/catch, that rejection would skip
+    // setLoading(false)/setErrorMessage below and leave the form stuck
+    // on "Kaydediliyor..." with no way to recover short of a reload.
+    try {
+      const rollbackRes = await fetch("/api/auth/rollback-registration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: data.user.id }),
+      });
+
+      if (!rollbackRes.ok) {
+        console.error(
+          "rollback-registration responded with",
+          rollbackRes.status
+        );
+      }
+    } catch (rollbackError) {
+      console.error(rollbackError);
+    }
+
+    setLoading(false);
+    setErrorMessage(
+      "Kayıt sırasında bir sorun oluştu. Lütfen tekrar dene."
+    );
+    return;
+  }
 
 }
 
@@ -258,9 +299,32 @@ export default function RegisterForm() {
         onExpire={() => setCaptchaToken(null)}
       />
 
+      <label className="flex items-start gap-2 text-sm text-[var(--muted)]">
+        <input
+          type="checkbox"
+          checked={agreedToTerms}
+          onChange={(e) => {
+            setAgreedToTerms(e.target.checked);
+            setErrorMessage("");
+          }}
+          className="mt-0.5"
+        />
+
+        <span>
+          <Link href="/terms" target="_blank" className="text-[var(--accent)] hover:underline">
+            Kullanım Şartları
+          </Link>{" "}
+          ve{" "}
+          <Link href="/privacy" target="_blank" className="text-[var(--accent)] hover:underline">
+            Gizlilik Politikası
+          </Link>
+          &apos;nı okudum, kabul ediyorum.
+        </span>
+      </label>
+
       <button
         type="submit"
-        disabled={loading || !captchaToken}
+        disabled={loading || !captchaToken || !agreedToTerms}
         className="auth-submit-btn disabled:opacity-50"
       >
         {loading ? "Kaydediliyor..." : "Kaydol"}

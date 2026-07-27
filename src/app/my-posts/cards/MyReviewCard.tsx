@@ -2,10 +2,10 @@ import Link from "next/link";
 import {
   Pencil,
   Trash2,
-  Info,
+  Ghost,
 } from "lucide-react";
 import IconActionButton from "@/components/ui/IconActionButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DeleteConfirmPopup from "@/components/ui/DeleteConfirmPopup";
 import { turkishCities } from "@/app/constants/turkishCities";
 import { experienceLevels } from "@/app/constants/experienceLevels";
@@ -13,6 +13,7 @@ import {
   getEmploymentStatusLabel,
   renderStars,
 } from "@/app/constants/reviewLabels";
+import PostStatusBadge from "./PostStatusBadge";
 
 type MyReviewCardProps = {
   review: any;
@@ -23,19 +24,23 @@ export default function MyReviewCard({
 }: MyReviewCardProps) {
     
 
-    const createdAt =
-    new Date(review.created_at);
+    const [canEdit, setCanEdit] = useState(false);
 
-    const now = new Date();
+    useEffect(() => {
 
-    const diffInMinutes =
-    (now.getTime() -
-        createdAt.getTime()) /
-    1000 /
-    60;
+      const createdAt = new Date(
+        review.created_at
+      ).getTime();
 
-    const canEdit =
-    diffInMinutes <= 15;
+      const now = Date.now();
+
+      const diffInMinutes =
+        (now - createdAt) / 1000 / 60;
+
+      setCanEdit(diffInMinutes <= 15);
+
+    }, [review.created_at]);
+
     const [showEditTooltip, setShowEditTooltip] = useState(false);
     const [expanded, setExpanded] = useState(false);
     const [
@@ -127,68 +132,66 @@ const getCityName = (
 
       
 
-        <div
-          className="
-            flex
-            items-start
-            gap-4
-          "
-        >
+        <div className="flex items-start justify-between gap-3">
 
-          <div>
+          <div className="flex items-start gap-2.5 min-w-0">
 
-            <h2
-              className="
-                text-xl
-                font-semibold
-                text-[var(--text-dark)]
-              "
-            >
-              {review.title}
-            </h2>
+            <div className="w-9 h-9 rounded-full bg-[var(--surface-2)] flex items-center justify-center shrink-0 overflow-hidden">
+              {!review.is_anonymous && review.authorAvatarUrl ? (
+                <img
+                  src={review.authorAvatarUrl}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <Ghost size={16} className="text-[var(--accent)]" />
+              )}
+            </div>
 
-            <p
-              className="
-         text-sm
-        text-[var(--muted-dark)]
-        mb-3
-              "
-            >
-              {review.companies?.name}
-              {" • "}
-              {review.roles?.name}
-            </p>
+            <div className="min-w-0">
+
+              <h2
+                className="
+                  text-xl
+                  font-semibold
+                  text-[var(--text-dark)]
+                "
+              >
+                {review.title}
+              </h2>
+
+              <p
+                className="
+           text-sm
+          text-[var(--muted-dark)]
+          mt-1
+                "
+              >
+                {review.companies?.name}
+                {" • "}
+                {review.roles?.name}
+              </p>
+
+              <p className="text-xs text-[var(--muted-dark)] mt-0.5">
+                {!review.is_anonymous && review.authorUsername
+                  ? `@${review.authorUsername}`
+                  : "anonim"}
+              </p>
+
+            </div>
 
           </div>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
+
+          <PostStatusBadge
+            moderationStatus={review.moderation_status}
+            roleStatus={review.role_status}
+            companyStatus={review.company_status}
+          />
 
           <div
             className="
-              shrink-0
-
-              rounded-md
-
-              bg-black/5
-
-              px-2.5
-              py-1.5
-
-              text-xs
-              font-medium
-
-              text-[var(--muted-dark)]
-            "
-          >
-            {review.is_anonymous
-              ? "Anonim"
-              : "Kullanıcı adı"}
-          </div>
-
-          <div
-            className="
-              relative
-
               shrink-0
 
               rounded-md
@@ -197,63 +200,13 @@ const getCityName = (
 
               px-2.5 py-1
 
-              text-sm
+              text-xs
               font-medium
 
               text-[var(--text-dark)]
             "
           >
-            <div className="flex items-center gap-1">
-
-            <span>
-              ⭐ {review.overall_rating}/5
-            </span>
-
-           <div className="group relative">
-
-            <Info
-              size={14}
-              strokeWidth={2}
-              className="cursor-help"
-            />
-
-            <div
-              className="
-                invisible
-
-                absolute
-                bottom-full
-                right-0
-
-                mb-2
-
-                whitespace-nowrap
-
-                rounded-md
-
-                bg-black
-
-                px-2 py-1
-
-                text-xs
-                text-white
-
-                opacity-0
-
-                shadow-lg
-
-                transition-all
-
-                group-hover:visible
-                group-hover:opacity-100
-              "
-            >
-              Genel şirket puanınız.
-            </div>
-
-          </div>
-
-          </div>
+            Genel Puan ⭐{review.overall_rating}/5
           </div>
 
           </div>
@@ -345,7 +298,7 @@ const getCityName = (
                   </div>
 
                   <div className="flex justify-between">
-                    <span>Yönetim</span>
+                    <span>Yönetim Kalitesi</span>
                     <span>
                       {renderStars(
                         review.management
@@ -372,7 +325,7 @@ const getCityName = (
                   </div>
 
                   <div className="flex justify-between">
-                    <span>Şeffaflık</span>
+                    <span>İletişim Şeffaflığı</span>
                     <span>
                       {renderStars(
                         review.transparency

@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronDown, X } from "lucide-react";
 import FeedCard, { type FeedItem } from "./FeedCard";
 import Pagination from "@/components/Pagination";
 import CompareView from "./CompareView";
 import ExploreModeToggle from "./ExploreModeToggle";
 import RoleAutocomplete from "@/components/forms/RoleAutocomplete";
+import CompanyAutocomplete from "@/components/forms/CompanyAutocomplete";
 import SelectDropdown from "@/components/forms/SelectDropdown";
 import TurkishCitySelect from "@/components/forms/TurkishCitySelect";
+import { experienceLevels } from "@/app/constants/experienceLevels";
 
 const TYPE_TABS: {
   value: "" | "salary" | "review" | "interview";
@@ -27,11 +29,13 @@ const YEAR_OPTIONS = Array.from({ length: 6 }, (_, i) => ({
   label: String(currentYear - i),
 }));
 
-const EXPERIENCE_OPTIONS = [
-  { value: "0-2", label: "0-2 yıl" },
-  { value: "3-5", label: "3-5 yıl" },
-  { value: "5+", label: "5+ yıl" },
-];
+// experience_years stores a bucket id (1="0-1 yıl" ... 6="10+ yıl", see
+// experienceLevels.ts), not a literal year count — options mirror that
+// table directly instead of a hand-rolled year-range string.
+const EXPERIENCE_OPTIONS = experienceLevels.map((level) => ({
+  value: level.id,
+  label: level.name,
+}));
 
 const TYPE_NOUN: Record<"" | "salary" | "review" | "interview", string> = {
   "": "Paylaşım",
@@ -57,11 +61,23 @@ export default function ExploreClient({
   currentPage,
   totalPages,
 }: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [roleSearch, setRoleSearch] = useState("");
   const [roleId, setRoleId] = useState<number | null>(null);
-  const [experience, setExperience] = useState<string | null>(null);
+  const [companySearch, setCompanySearch] = useState("");
+  const [companyId, setCompanyId] = useState<number | null>(null);
+  const [experience, setExperience] = useState<number | null>(null);
   const [city, setCity] = useState<number | null>(null);
   const [year, setYear] = useState<number | null>(null);
+
+  // Driven by the URL (not local state) — same source the Akış/Karşılaştır
+  // split already used, so all three destinations are one consistent,
+  // bookmarkable/shareable "mode" concept instead of two separate toggles
+  // (a URL-level Akış/Karşılaştır switch plus a client-only sub-toggle).
+  const compareSubMode: "company" | "role" =
+    searchParams.get("compareType") === "role" ? "role" : "company";
 
   return (
     <>
@@ -81,6 +97,62 @@ export default function ExploreClient({
         <div className="container mx-auto px-4 max-w-7xl flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
           {compareMode ? (
             <div className="grid gap-3 grid-cols-2 md:grid-cols-4 flex-1">
+              {/* The role/company picker is what's actually being
+                  compared — the other three just narrow it — so it leads
+                  the row instead of trailing behind them. */}
+              {compareSubMode === "role" ? (
+                <div className="relative">
+                  <CompanyAutocomplete
+                    value={companySearch}
+                    onChange={setCompanySearch}
+                    onCompanySelect={(company) => {
+                      setCompanyId(company?.id ?? null);
+                    }}
+                    searchOnly
+                    placeholder="Tüm Şirketler"
+                    inputClassName={companySearch ? "pr-8" : ""}
+                  />
+
+                  {companySearch && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCompanySearch("");
+                        setCompanyId(null);
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 hover:text-black/70"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="relative">
+                  <RoleAutocomplete
+                    roleSearch={roleSearch}
+                    setRoleSearch={setRoleSearch}
+                    selectedRoleId={roleId}
+                    onSelect={setRoleId}
+                    searchOnly
+                    placeholder="Tüm Pozisyonlar"
+                    inputClassName={roleSearch ? "pr-8" : ""}
+                  />
+
+                  {roleSearch && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRoleSearch("");
+                        setRoleId(null);
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 hover:text-black/70"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+              )}
+
               <SelectDropdown
                 value={experience}
                 onChange={setExperience}
@@ -93,6 +165,7 @@ export default function ExploreClient({
                   value={city}
                   onChange={setCity}
                   placeholder="Tüm Şehirler"
+                  mutedPlaceholder
                   className={city !== null ? "pr-8" : undefined}
                 />
 
@@ -118,49 +191,28 @@ export default function ExploreClient({
                 options={YEAR_OPTIONS}
                 placeholder="Tüm Yıllar"
               />
-
-              <div className="relative">
-                <RoleAutocomplete
-                  roleSearch={roleSearch}
-                  setRoleSearch={setRoleSearch}
-                  selectedRoleId={roleId}
-                  onSelect={setRoleId}
-                  searchOnly
-                  placeholder="Tüm Pozisyonlar"
-                  inputClassName={roleSearch ? "pr-8" : ""}
-                />
-
-                {roleSearch && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRoleSearch("");
-                      setRoleId(null);
-                    }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 hover:text-black/70"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
             </div>
           ) : (
-            <div className="flex items-center gap-6">
-              {TYPE_TABS.map((tab) => (
-                <Link
-                  key={tab.value}
-                  href={tab.value ? `/explore?type=${tab.value}` : "/explore"}
-                  className={`share-tab-minimal lowercase ${
-                    typeFilter === tab.value ? "share-tab-minimal-active" : ""
-                  }`}
-                >
-                  {tab.label}
-                </Link>
-              ))}
+            // Narrows one continuous feed by type rather than switching
+            // between separate datasets (unlike the company page's 6
+            // tabs) — functionally a filter, so it uses the same
+            // SelectDropdown filter convention as the rest of the site
+            // instead of a tab strip.
+            <div className="ml-auto w-60">
+              <SelectDropdown
+                value={typeFilter}
+                onChange={(value) =>
+                  router.push(value ? `/explore?type=${value}` : "/explore")
+                }
+                options={TYPE_TABS}
+                defaultValue=""
+                mutedAtDefault
+                placeholder="Tümü"
+              />
             </div>
           )}
 
-          <ExploreModeToggle compareMode={compareMode} />
+          <ExploreModeToggle compareMode={compareMode} compareSubMode={compareSubMode} />
         </div>
 
         <div
@@ -188,7 +240,11 @@ export default function ExploreClient({
       >
         {compareMode ? (
           <CompareView
+            mode={compareSubMode}
             roleId={roleId}
+            roleName={roleId ? roleSearch : null}
+            companyId={companyId}
+            companyName={companyId ? companySearch : null}
             experience={experience}
             city={city}
             year={year}

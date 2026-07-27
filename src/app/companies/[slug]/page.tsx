@@ -2,7 +2,9 @@ import { supabase } from "@/lib/supabase";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { turkishCities } from "@/app/constants/turkishCities";
+import { INDUSTRIES } from "@/app/constants/industries";
 import CompanyPageClient from "@/components/CompanyPageClient";
+import CompanyHeaderCard from "@/components/CompanyHeaderCard";
 
 
 type CompanyPageProps = {
@@ -25,14 +27,18 @@ export async function generateMetadata({
     .single();
 
   if (!company) {
-    return { title: "Şirket bulunamadı | insiderol" };
+    return { title: "Şirket bulunamadı" };
   }
 
   return {
-    title: `${company.name} Maaşları ve Çalışan Yorumları | insiderol`,
+    title: `${company.name} Maaşları ve Çalışan Yorumları`,
 
     description:
       `${company.name} maaşları, çalışan yorumları, ratingler ve salary insights.`,
+
+    alternates: {
+      canonical: `/companies/${slug}`,
+    },
   };
 }
 
@@ -94,6 +100,57 @@ const { data: salaries } = await supabase
         ascending: false,
       });
 
+    // Only look up profiles for non-anonymous posts — an anonymous post's
+    // author shouldn't even reach the client, not just stay unrendered
+    // (same pattern as the /explore feed).
+    const identifiableUserIds = Array.from(
+      new Set(
+        [...(salaries || []), ...(reviews || [])]
+          .filter((row) => !row.is_anonymous && row.user_id)
+          .map((row) => row.user_id)
+      )
+    );
+
+    const profileByUserId = new Map<
+      string,
+      { username: string | null; avatar_url: string | null }
+    >();
+
+    if (identifiableUserIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, username, avatar_url")
+        .in("id", identifiableUserIds);
+
+      (profiles || []).forEach((profile: any) => {
+        profileByUserId.set(profile.id, {
+          username: profile.username,
+          avatar_url: profile.avatar_url,
+        });
+      });
+    }
+
+    // user_id (select("*") includes it) must never reach the client — it
+    // was leaking here even on anonymous rows, since the early return
+    // below used to hand back the raw row unchanged.
+    const withAuthor = (rows: any[]) =>
+      rows.map((row) => {
+        const { user_id, ...rest } = row;
+
+        if (row.is_anonymous || !user_id) return rest;
+
+        const profile = profileByUserId.get(user_id);
+
+        return {
+          ...rest,
+          authorUsername: profile?.username ?? null,
+          authorAvatarUrl: profile?.avatar_url ?? null,
+        };
+      });
+
+    const salariesWithAuthor = withAuthor(salaries || []);
+    const reviewsWithAuthor = withAuthor(reviews || []);
+
     const averageReviewRating =
     reviews && reviews.length > 0
       ? (
@@ -103,7 +160,7 @@ const { data: salaries } = await supabase
             0
           ) / reviews.length
         ).toFixed(1)
-      : "0";
+      : "0.0";
 
   const totalSalaries = salaries?.length || 0;
 
@@ -131,6 +188,11 @@ const { data: salaries } = await supabase
 const companyCityName =
   turkishCities.find(
     (city) => city.id === company.hq_city
+  )?.name || "Bilinmiyor";
+
+const industryName =
+  INDUSTRIES.find(
+    (industry) => industry.id === Number(company.industry)
   )?.name || "Bilinmiyor";
 
   // Logo/website may each be missing independently (most companies are
@@ -212,99 +274,25 @@ const companyCityName =
   <div className="w-full max-w-6xl mx-auto px-4">
       <CompanyPageClient
         company={company}
-        reviews={reviews || []}
-        salaries={salaries || []}
+        reviews={reviewsWithAuthor}
+        salaries={salariesWithAuthor}
         companyId={company.id}
         companyName={company.name}
         hqCity={company.hq_city}
         initialTab={initialTab}
       >
 
-     
     {/* Unified Header + Content Card */}
-<div
-  className="
-    bg-gradient-to-br
-    border border-black/10
-   from-white
-    via-zinc-50
-    to-zinc-100
-    rounded-[0.75rem]
-    p-3 md:p-5
-  "
->
- {/* Page Header */}
-      <div className=" 
-            flex items-center
-            justify-center
-            text-center
-            text-2xl
-            text-[var(--text-dark)]
-            mb-4
-           ">
-
-        
-          <span className="font-medium text-[var(--text-dark)]">
-            {company.name}
-          </span>
-           <span className="ml-1.5 text-black/50">{" "} Çalışan Deneyimleri</span>
-
-      
-      </div>
-
-      {/* Logo + Stats */}
-      <div className="flex flex-col md:flex-row md:items-center md:gap-8">
-
-        {/* Logo */}
-        <div className="flex-shrink-0 self-center text-center md:text-left relative mb-6 md:mb-0">
-          {logoContent}
-        </div>
-
-        <div className="hidden md:block w-px h-15 self-center bg-black/10" />
-
-        {/* Stats Cards */}
-        <div className="flex-1 flex flex-col md:items-start items-center gap-4">
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-
-            <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
-              <p className="text-[var(--text-dark)] text-[20px] font-semibold tracking-tight leading-none">
-                ⭐{averageReviewRating}
-              </p>
-              <span className="text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
-                Ortalama Puan
-              </span>
-              <span className="text-[11px] text-[var(--muted-dark)]/70">
-                {reviews?.length || 0} değerlendirme
-              </span>
-            </div>
-
-            <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
-              <div className="text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
-                ₺{averageSalary.toLocaleString()}
-              </div>
-              <p className="text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
-                Ortalama Maaş
-              </p>
-              <span className="text-[11px] text-[var(--muted-dark)]/70">
-                {totalSalaries} paylaşım
-              </span>
-            </div>
-
-            <div className="card-light card-compact flex flex-col items-center justify-center gap-3 text-center">
-              <div className="text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
-                {companyCityName}
-              </div>
-              <p className="text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-1">
-                Merkez Konum
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-    </div>
+    <CompanyHeaderCard
+      companyName={company.name}
+      logoContent={logoContent}
+      companyCityName={companyCityName}
+      averageReviewRating={averageReviewRating}
+      reviewCount={reviews?.length || 0}
+      averageSalary={averageSalary}
+      salaryCount={totalSalaries}
+      industryName={industryName}
+    />
 
 </CompanyPageClient>
   </div>

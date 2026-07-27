@@ -8,13 +8,37 @@ import { normalizeSearchText } from "@/app/constants/normalizationUtils";
 
 import { redirect } from "next/navigation";
 
+async function requireAdmin(
+  supabase: Awaited<ReturnType<typeof createClient>>
+) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.is_admin) {
+    throw new Error("Unauthorized");
+  }
+}
+
 export async function importRolesCsv(
   formData: FormData
 ) {
 
  const supabase =
     await createClient();
-  
+
+  await requireAdmin(supabase);
+
   const file = formData.get(
     "file"
   ) as File;
@@ -83,6 +107,8 @@ export async function importCompaniesCsv(
 
 const supabase =
   await createClient();
+
+  await requireAdmin(supabase);
 
   const file = formData.get(
     "file"

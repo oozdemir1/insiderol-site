@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import IconActionButton from "@/components/ui/IconActionButton";
+import PostStatusBadge from "./PostStatusBadge";
 
 import {
   useEffect,
@@ -109,10 +110,14 @@ const benefitCount = [
   benefit.meal_policy,
   benefit.transportation_policy,
   benefit.private_insurance,
-  benefit.equipment_support,
 ].filter(
   (value) => value && value !== 1
-).length;
+).length + (
+  benefit.equipment_support?.length &&
+  !benefit.equipment_support.includes("Yok")
+    ? 1
+    : 0
+);
 
 const getCityName = (
   cityId: number | null
@@ -199,6 +204,12 @@ const getCityName = (
   </div>
 
 <div className="ml-auto flex items-center gap-2">
+
+<PostStatusBadge
+  moderationStatus={benefit.moderation_status}
+  roleStatus={benefit.role_status}
+  companyStatus={benefit.company_status}
+/>
 
 <div
   className="

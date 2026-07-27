@@ -25,6 +25,13 @@ type Props = {
   // opt-in since the companies-page filter usage (where "Tüm Şehirler"
   // reads as a real "no filter" option) doesn't want it.
   showChevron?: boolean;
+
+  // The 6 submission forms force the placeholder to --text-dark so a
+  // required "Çalışılan Şehir" field doesn't look optional/greyed-out.
+  // Filter contexts (an actual "Tüm Şehirler" = no filter) want the
+  // opposite — the same muted placeholder every other filter dropdown
+  // uses — so this opts out of that override instead of fighting it.
+  mutedPlaceholder?: boolean;
 };
 
 export default function TurkishCitySelect({
@@ -34,6 +41,7 @@ export default function TurkishCitySelect({
   className,
   placeholder = "Tüm Şehirler",
   showChevron = false,
+  mutedPlaceholder = false,
 }: Props) {
 
   const sortedCities = [...turkishCities].sort(
@@ -194,9 +202,9 @@ export default function TurkishCitySelect({
             selectCity(filteredCities[highlightedIndex]);
           }
         }}
-        className={`form-field placeholder:!text-[var(--text-dark)] ${
-          showChevron ? "pr-10" : ""
-        } ${className || ""}`}
+        className={`form-field ${
+          mutedPlaceholder ? "" : "placeholder:!text-[var(--text-dark)]"
+        } ${showChevron ? "pr-10" : ""} ${className || ""}`}
       />
 
       {showChevron && (

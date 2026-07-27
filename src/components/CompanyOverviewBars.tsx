@@ -1,3 +1,5 @@
+import RatingBar from "./RatingBar";
+
 type SubRatings = {
   work_life_balance: number;
   management: number;
@@ -9,10 +11,10 @@ type SubRatings = {
 
 const SUB_RATING_LABELS: Record<keyof SubRatings, string> = {
   work_life_balance: "İş-Yaşam Dengesi",
-  management: "Yönetim",
+  management: "Yönetim Kalitesi",
   career_growth: "Kariyer Gelişimi",
   work_environment: "Çalışma Ortamı",
-  transparency: "Şeffaflık",
+  transparency: "İletişim Şeffaflığı",
   employee_value: "Çalışana Değer",
 };
 
@@ -40,32 +42,13 @@ export default function ReviewRatingBars({ reviews }: { reviews: any[] }) {
   return (
     <div className="card-light rounded-2xl p-5 md:p-6 mb-4">
       <div className="grid md:grid-cols-2 gap-x-10 gap-y-5">
-        {SUB_RATING_FIELDS.map((field) => {
-          const value = averages[field] || 0;
-
-          return (
-            <div key={field}>
-              <div className="flex items-center justify-between text-sm mb-1.5">
-                <span className="text-[var(--text-dark)]">
-                  {SUB_RATING_LABELS[field]}
-                </span>
-
-                <span className="text-[var(--muted-dark)]">
-                  {value.toFixed(1)}
-                </span>
-              </div>
-
-              <div className="h-1.5 rounded-full bg-black/[0.06] overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-[var(--accent)]"
-                  style={{
-                    width: `${Math.min(100, (value / 5) * 100)}%`,
-                  }}
-                />
-              </div>
-            </div>
-          );
-        })}
+        {SUB_RATING_FIELDS.map((field) => (
+          <RatingBar
+            key={field}
+            label={SUB_RATING_LABELS[field]}
+            value={averages[field] || 0}
+          />
+        ))}
       </div>
     </div>
   );

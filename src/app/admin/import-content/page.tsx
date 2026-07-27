@@ -1,3 +1,5 @@
+import { createClient } from "@/lib/server";
+import { redirect } from "next/navigation";
 import { importRolesCsv, importCompaniesCsv, } from "./actions";
 import { INDUSTRIES } from "@/app/constants/industries";
 
@@ -14,6 +16,25 @@ export default async function ImportContentPage({
     roleFailed?: string;
   }>;
 }) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.is_admin) {
+    redirect("/");
+  }
 
 const params = await searchParams;
  
@@ -65,7 +86,7 @@ const params = await searchParams;
                 Rolleri İçe Aktar
             </button>
                 {params.roleInserted && (
-                  <div className="mt-4 rounded bg-green-50 p-3 text-sm text-[red]">
+                  <div className="mt-4 rounded bg-green-50 p-3 text-sm text-green-700">
                     <div>
                       Eklenen: {params.roleInserted}
                     </div>
@@ -151,7 +172,7 @@ const params = await searchParams;
               Şirketleri İçe Aktar
             </button>
                 {params.inserted && (
-                  <div className="mt-4 rounded bg-green-50 p-3 text-sm text-[red]">
+                  <div className="mt-4 rounded bg-green-50 p-3 text-sm text-green-700">
                     <div>
                       Eklenen: {params.inserted}
                     </div>

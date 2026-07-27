@@ -116,7 +116,7 @@ export default function MyPostsClient({
         />
 
         {/* Page Intro */}
-        <div className=" -mb-4">
+        <div className=" -mb-4 mt-3">
 
           {/* Trust Indicators */}
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -385,7 +385,7 @@ export default function MyPostsClient({
                   <EmptyStateCard
                     icon={TurkishLira}
                     title="Henüz ücret politikası paylaşmadınız!"
-                    description="İlk ücret politikasu paylaşımınızı yaparak diğer aday ve çalışanlara yardımcı olun."
+                    description="İlk ücret politikası paylaşımınızı yaparak diğer aday ve çalışanlara yardımcı olun."
                     buttonText="Ücret Politikası Paylaş"
                     onClick={() =>
                       router.push("/share?tab=Ücret Politikası")

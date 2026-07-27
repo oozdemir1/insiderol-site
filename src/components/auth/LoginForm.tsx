@@ -70,13 +70,17 @@ export default function LoginForm({
 
   if (!identifier.includes("@")) {
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("id, email")
-      .eq("username", identifier)
-      .single();
+    // Resolved via a server-side route (service-role lookup), not a
+    // direct client query — see src/app/api/auth/resolve-username.
+    const resolveRes = await fetch("/api/auth/resolve-username", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: identifier }),
+    });
 
-    if (!profile) {
+    const { email } = await resolveRes.json();
+
+    if (!email) {
       // Deliberately the same generic message as a wrong password below
       // — a distinct "user not found" message would let someone
       // enumerate which usernames exist on the platform.
@@ -85,7 +89,7 @@ export default function LoginForm({
       return;
     }
 
-    loginEmail = profile.email;
+    loginEmail = email;
   }
 
   const { error } = await supabase.auth.signInWithPassword({

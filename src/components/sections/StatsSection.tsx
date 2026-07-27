@@ -1,27 +1,114 @@
 "use client";
 
+import Link from "next/link";
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const stats = [
-  { value: "4,200+", percent: 85, label: "Maaş paylaşımı" },
-  { value: "800+", percent: 60, label: "Şirket" },
-  { value: "1,500+", percent: 90, label: "Çalışan yorumu" },
-];
-
-export default function StatsSection() {
-  const [animatedPercent, setAnimatedPercent] = useState(
-    stats.map(() => 0)
+function StatRing({
+  count,
+  offset,
+  circumference,
+  radius,
+  strokeWidth,
+  label,
+}: {
+  count: number;
+  offset: number;
+  circumference: number;
+  radius: number;
+  strokeWidth: number;
+  label: string;
+}) {
+  return (
+    <div className="flex flex-col items-center min-w-[120px]">
+      <div className="relative w-[200px] h-[200px]">
+        <svg
+          className="w-full h-full"
+          viewBox={`0 0 ${radius * 2 + strokeWidth * 2} ${
+            radius * 2 + strokeWidth * 2
+          }`}
+        >
+          <circle
+            className="text-gray-200"
+            strokeWidth={strokeWidth}
+            stroke="currentColor"
+            fill="transparent"
+            r={radius}
+            cx={radius + strokeWidth}
+            cy={radius + strokeWidth}
+          />
+          <circle
+            className="stats-circle transition-all duration-200"
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+            stroke="currentColor"
+            fill="transparent"
+            r={radius}
+            cx={radius + strokeWidth}
+            cy={radius + strokeWidth}
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl font-bold text-[var(--text-dark)]">
+          {count}+
+        </div>
+      </div>
+      <p className="mt-4 text-center text-base md:text-xl text-[var(--muted-dark)]">
+        {label}
+      </p>
+    </div>
   );
+}
+
+function InviteRing({
+  label,
+  href,
+}: {
+  label: string;
+  href: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="flex flex-col items-center min-w-[120px] group"
+    >
+      <div className="w-[200px] h-[200px] rounded-full border-2 border-dashed border-[var(--accent)]/35 bg-[var(--accent)]/5 flex items-center justify-center text-[var(--accent)] transition-colors group-hover:bg-[var(--accent)]/10">
+        <Plus size={30} />
+      </div>
+      <p className="mt-4 text-center text-base md:text-xl text-[var(--muted-dark)]">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-semibold text-[var(--accent)]">
+        İlk sen paylaş →
+      </p>
+    </Link>
+  );
+}
+
+export default function StatsSection({
+  companyCount,
+  salaryCount,
+  reviewCount,
+}: {
+  companyCount: number;
+  salaryCount: number;
+  reviewCount: number;
+}) {
+  const [animatedPercent, setAnimatedPercent] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAnimatedPercent((prev) =>
-        prev.map((p, i) => (p < stats[i].percent ? p + 2 : p))
-      );
+      setAnimatedPercent((prev) => (prev < 100 ? prev + 2 : prev));
     }, 20);
 
     return () => clearInterval(interval);
   }, []);
+
+  const radius = 65;
+  const strokeWidth = 10;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (animatedPercent / 100) * circumference;
 
   return (
     <section className="bg-[var(--section-light)] py-28 px-4">
@@ -36,56 +123,40 @@ export default function StatsSection() {
       </div>
 
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-around items-center gap-12 flex-wrap">
-        {stats.map((stat, idx) => {
-          const radius = 65;
-          const strokeWidth = 10;
-          const circumference = 2 * Math.PI * radius;
-          const offset =
-            circumference - (animatedPercent[idx] / 100) * circumference;
+        <StatRing
+          count={companyCount}
+          offset={offset}
+          circumference={circumference}
+          radius={radius}
+          strokeWidth={strokeWidth}
+          label="Şirket"
+        />
 
-          return (
-            <div
-              key={idx}
-              className="flex flex-col items-center min-w-[120px]"
-            >
-              <div className="relative w-[200px] h-[200px]">
-                <svg
-                  className="w-full h-full"
-                  viewBox={`0 0 ${radius * 2 + strokeWidth * 2} ${
-                    radius * 2 + strokeWidth * 2
-                  }`}
-                >
-                  <circle
-                    className="text-gray-200"
-                    strokeWidth={strokeWidth}
-                    stroke="currentColor"
-                    fill="transparent"
-                    r={radius}
-                    cx={radius + strokeWidth}
-                    cy={radius + strokeWidth}
-                  />
-                  <circle
-                    className="stats-circle transition-all duration-200"
-                    strokeWidth={strokeWidth}
-                    strokeDasharray={circumference}
-                    strokeDashoffset={offset}
-                    strokeLinecap="round"
-                    stroke="currentColor"
-                    fill="transparent"
-                    r={radius}
-                    cx={radius + strokeWidth}
-                    cy={radius + strokeWidth}
-                  />
-                </svg>
-                  <div className="absolute inset-0 flex items-center justify-center text-2xl md:text-3xl font-bold text-[var(--text-dark)]">                  {stat.value}
-                </div>
-              </div>
-              <p className="mt-4 text-center text-base md:text-xl text-[var(--muted-dark)]">
-                {stat.label}
-              </p>
-            </div>
-          );
-        })}
+        {salaryCount > 0 ? (
+          <StatRing
+            count={salaryCount}
+            offset={offset}
+            circumference={circumference}
+            radius={radius}
+            strokeWidth={strokeWidth}
+            label="Maaş paylaşımı"
+          />
+        ) : (
+          <InviteRing label="Maaş paylaşımı" href="/share?tab=Maaş" />
+        )}
+
+        {reviewCount > 0 ? (
+          <StatRing
+            count={reviewCount}
+            offset={offset}
+            circumference={circumference}
+            radius={radius}
+            strokeWidth={strokeWidth}
+            label="Çalışan yorumu"
+          />
+        ) : (
+          <InviteRing label="Çalışan yorumu" href="/share?tab=Yorum" />
+        )}
       </div>
     </section>
   );

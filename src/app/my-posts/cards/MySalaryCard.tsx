@@ -8,9 +8,11 @@ import { turkishCities } from "@/app/constants/turkishCities";
 import {
   Pencil,
   Trash2,
+  Ghost,
 } from "lucide-react";
 
 import IconActionButton from "@/components/ui/IconActionButton";
+import PostStatusBadge from "./PostStatusBadge";
 
 import {
   useEffect,
@@ -142,7 +144,21 @@ const getCityName = (
         gap-3
     "
     >
-        <div>
+        <div className="flex items-start gap-2.5 min-w-0">
+
+          <div className="w-9 h-9 rounded-full bg-[var(--surface-2)] flex items-center justify-center shrink-0 overflow-hidden">
+            {!salary.is_anonymous && salary.authorAvatarUrl ? (
+              <img
+                src={salary.authorAvatarUrl}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <Ghost size={16} className="text-[var(--accent)]" />
+            )}
+          </div>
+
+          <div className="min-w-0">
 
           <h2
             className="
@@ -158,14 +174,22 @@ const getCityName = (
             className="
            text-sm
           text-[var(--muted-dark)]
-          mb-3
+          mt-1
             "
           >
             {salary.roles?.name}
           </p>
 
+          <p className="text-xs text-[var(--muted-dark)] mt-0.5 mb-3">
+            {!salary.is_anonymous && salary.authorUsername
+              ? `@${salary.authorUsername}`
+              : "anonim"}
+          </p>
+
+          </div>
+
         </div>
-     
+
 
    <div
   className="
@@ -177,27 +201,11 @@ const getCityName = (
   "
 >
 
-  <div
-    className="
-      shrink-0
-
-      rounded-md
-
-      bg-black/5
-
-      px-2.5
-      py-1.5
-
-      text-xs
-      font-medium
-
-      text-[var(--muted-dark)]
-    "
-  >
-    {salary.is_anonymous
-      ? "Anonim"
-      : "Kullanıcı adı"}
-  </div>
+  <PostStatusBadge
+    moderationStatus={salary.moderation_status}
+    roleStatus={salary.role_status}
+    companyStatus={salary.company_status}
+  />
 
   <div
     className="
@@ -207,10 +215,10 @@ const getCityName = (
 
       bg-[rgba(123,189,0,0.10)]
 
-      px-3
+      px-2.5
       py-1
 
-      text-sm
+      text-xs
       font-medium
 
       text-[var(--text-dark)]

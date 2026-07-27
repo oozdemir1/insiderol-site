@@ -372,6 +372,13 @@ const roleStatus =
           submission_count: 1,
         });
 
+    // An orphaned suggestion here (no matching pending_roles row) can
+    // never be approved by an admin — fail the whole submission.
+    if (error) {
+      console.warn(error);
+      setSubmitError(translateSubmissionError(error.message));
+      return;
+    }
     }
 }
 
@@ -407,7 +414,7 @@ if (
 
   } else {
 
-    await supabase
+    const { error: pendingCompanyError } = await supabase
       .from("pending_companies")
       .insert({
         suggested_name:
@@ -424,6 +431,12 @@ if (
 
         hq_city: formData.hqCity,
       });
+
+    if (pendingCompanyError) {
+      console.warn(pendingCompanyError);
+      setSubmitError(translateSubmissionError(pendingCompanyError.message));
+      return;
+    }
   }
 }
 

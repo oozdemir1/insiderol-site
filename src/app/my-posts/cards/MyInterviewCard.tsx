@@ -4,6 +4,7 @@ import { Pencil } from "lucide-react";
 import IconActionButton from "@/components/ui/IconActionButton";
 import { Trash2 } from "lucide-react";
 import DeleteConfirmPopup from "@/components/ui/DeleteConfirmPopup";
+import PostStatusBadge from "./PostStatusBadge";
 import {
   DIFFICULTY_LABELS,
   INTERVIEW_FORMAT_LABELS,
@@ -151,6 +152,12 @@ const difficultyLabel =
   </div>
 
   <div className="flex items-center gap-2 shrink-0">
+
+  <PostStatusBadge
+    moderationStatus={interview.moderation_status}
+    roleStatus={interview.role_status}
+    companyStatus={interview.company_status}
+  />
 
   <div
     className="

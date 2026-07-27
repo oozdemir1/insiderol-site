@@ -18,7 +18,7 @@ export const INDUSTRIES = [
 { id: 14, name: "Eğitim" },
 
 { id: 15, name: "Gıda ve İçecek" },
-{ id: 16, name: "Market Zincirleri" },
+{ id: 16, name: "Zincir Market" },
 { id: 17, name: "Kişisel Bakım ve Kozmetik" },
 
 { id: 18, name: "Tekstil ve Hazır Giyim" },

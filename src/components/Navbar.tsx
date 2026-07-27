@@ -331,10 +331,10 @@ export default function Navbar({
               <div className="md:hidden mt-3 rounded-2xl border border-white/10 bg-[var(--surface)] shadow-2xl shadow-black/20 p-5 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
 
                 <a
-                  href="/contact"
+                  href="/share"
                   className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
                 >
-                  İletişim
+                  Paylaş
                 </a>
 
                 <a
@@ -351,11 +351,65 @@ export default function Navbar({
                   Pozisyonlar
                 </a>
 
-                {!user && (
-   
-                  <a
-                      href="/auth/login"
+                <a
+                  href="/explore"
+                  className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                >
+                  Keşfet
+                </a>
+
+                {user && (
+
+                  <>
+
+                    <div className="my-1 border-t border-white/10" />
+
+                    <a
+                      href="/profile"
                       className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                    >
+                      Profil
+                    </a>
+
+                    <a
+                      href="/my-posts"
+                      className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                    >
+                      Paylaşımlarım
+                    </a>
+
+                    <a
+                      href="/settings"
+                      className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                    >
+                      Ayarlar
+                    </a>
+
+                  </>
+
+                )}
+
+                <div className="my-1 border-t border-white/10" />
+
+                {user ? (
+
+                  <button
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      window.location.href = "/";
+                    }}
+                    className="text-left text-red-400 hover:text-red-300 transition-all duration-200"
+                  >
+                    Çıkış Yap
+                  </button>
+
+                ) : (
+
+                  <div className="flex items-center gap-3">
+
+                    <a
+                      href="/auth/login"
+                      className="flex-1 border border-white/15 text-[var(--muted)] rounded-xl py-3 text-center font-medium"
                       onClick={() => {
                         localStorage.setItem(
                           "redirectAfterAuth",
@@ -365,28 +419,15 @@ export default function Navbar({
                     >
                       Giriş Yap
                     </a>
-                )}
 
-                {user ? (
+                    <a
+                      href="/auth/register"
+                      className="flex-1 bg-[var(--accent)] text-white rounded-xl py-3 text-center font-medium"
+                    >
+                      Kaydol
+                    </a>
 
-                  <button
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                      window.location.href = "/";
-                    }}
-                    className="bg-[var(--accent)] text-white rounded-xl py-3 font-medium"
-                  >
-                    @{user.user_metadata?.username}
-                  </button>
-
-                ) : (
-
-                  <a
-                    href="/register"
-                    className="bg-[var(--accent)] text-white rounded-xl py-3 text-center font-medium"
-                  >
-                    Kaydol
-                  </a>
+                  </div>
 
                 )}
 

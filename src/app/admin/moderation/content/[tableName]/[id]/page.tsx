@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/server";
+import { redirect, notFound } from "next/navigation";
 import { saveContentEdits } from "../../../actions";
+import { MODERATED_TABLES } from "../../../moderatedTables";
 
 
 export default async function EditContentPage({
@@ -12,11 +14,33 @@ export default async function EditContentPage({
 }) {
   const { tableName, id } = await params;
 
+  if (!MODERATED_TABLES.includes(tableName)) {
+    notFound();
+  }
+
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.is_admin) {
+    redirect("/");
+  }
+
   const hasTitle =
   tableName === "company_reviews" ||
   tableName === "interview_experiences";
-
-  const supabase = await createClient();
 
   const { data: content } = await supabase
     .from(tableName)

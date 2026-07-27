@@ -3,17 +3,20 @@
 import { useRef, useState } from "react";
 import SalaryCard from "@/components/SalaryCard";
 
-// Demo salary verisi
-const demoSalaries = [
-  { role: "Frontend Developer", salary: 15000, experienceLabel: "3-5 yıl", cityLabel: "İstanbul" },
-  { role: "Backend Developer", salary: 14500, experienceLabel: "1-3 yıl", cityLabel: "İstanbul" },
-  { role: "Fullstack Developer", salary: 16000, experienceLabel: "3-5 yıl", cityLabel: "İstanbul" },
-  { role: "Data Analyst", salary: 13500, experienceLabel: "1-3 yıl", cityLabel: "İstanbul" },
-  { role: "UI Designer", salary: 12000, experienceLabel: "0-1 yıl", cityLabel: "İstanbul" },
-  { role: "Project Manager", salary: 17000, experienceLabel: "5-7 yıl", cityLabel: "İstanbul" },
-];
+export type SalaryPreviewItem = {
+  role: string;
+  salary: number;
+  experienceLabel: string;
+  cityLabel: string;
+  techStack?: string | null;
+  comment?: string | null;
+};
 
-export default function SalaryPreviewCarousel() {
+export default function SalaryPreviewCarousel({
+  salaries,
+}: {
+  salaries: SalaryPreviewItem[];
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -54,7 +57,7 @@ export default function SalaryPreviewCarousel() {
         <div className="flex items-center justify-between mb-12 px-8">
           <div>
             <h2 className="text-4xl md:text-5xl font-bold text-[var(--text-dark)]">Son Maaş Paylaşımları</h2>
-            <p className="text-[var(--muted-dark)] text-lg mt-3">Demo çalışan maaş kartları</p>
+            <p className="text-[var(--muted-dark)] text-lg mt-3">Çalışanların anonim maaş bilgileri</p>
           </div>
         </div>
 
@@ -97,16 +100,18 @@ export default function SalaryPreviewCarousel() {
             onMouseUp={() => setIsDragging(false)}
             onMouseLeave={() => setIsDragging(false)}
           >
-            {demoSalaries.map((salary, idx) => (
+            {salaries.map((salary, idx) => (
               <div
                 key={idx}
-                className="flex-shrink-0 w-[calc(25%-1.5rem)] md:w-[calc(20%-1.5rem)] snap-start"
+                className="flex-shrink-0 w-[85%] sm:w-[45%] md:w-[20%] snap-start"
               >
                 <SalaryCard
                   role={salary.role}
                   salary={salary.salary}
                   experienceLabel={salary.experienceLabel}
                   cityLabel={salary.cityLabel}
+                  techStack={salary.techStack}
+                  comment={salary.comment}
                 />
               </div>
             ))}

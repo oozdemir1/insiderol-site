@@ -469,16 +469,18 @@ const pendingRoleName =
           submission_count: 1,
         });
 
+    // An orphaned suggestion here (no matching pending_roles row) can
+    // never be approved by an admin — fail the whole submission instead
+    // of just logging it.
     if (error) {
-      console.error(
-        "pending role insert failed",
-        error
-      );
+      console.warn(error);
+      setSubmitError(translateSubmissionError(error.message));
+      return;
     }
   }
 }
 
-   
+
 if (
   mode === "create" &&
   isNewCompany
@@ -509,7 +511,7 @@ if (
 
   } else {
 
-    await supabase
+    const { error: pendingCompanyError } = await supabase
       .from("pending_companies")
       .insert({
         suggested_name:
@@ -526,6 +528,12 @@ if (
 
         hq_city: formData.hqCity,
       });
+
+    if (pendingCompanyError) {
+      console.warn(pendingCompanyError);
+      setSubmitError(translateSubmissionError(pendingCompanyError.message));
+      return;
+    }
   }
 }
 
@@ -1357,6 +1365,34 @@ setSubmitted(true);
         </div>
       </div>
 
+            <div>
+        <label className="form-label block mb-3">
+          Anonimlik
+        </label>
+
+        <div className="p-2.5 rounded-lg border border-black/6 bg-white">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.is_anonymous}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+
+                  is_anonymous:
+                    e.target.checked,
+                }))
+              }
+              className="w-4 h-4"
+            />
+
+            <span className="text-sm text-[var(--muted-dark)]">
+              Anonim paylaş
+            </span>
+          </label>
+        </div>
+      </div>
+
       {/* Experience */}
       <div>
         <label className="form-label block mb-2">
@@ -1400,33 +1436,7 @@ setSubmitted(true);
         )}
       </div>
 
-      <div className="card-light p-5 rounded-3xl">
-        <div>
-          <label className="form-label block mb-3">
-            Anonimlik
-          </label>
 
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.is_anonymous}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-
-                  is_anonymous:
-                    e.target.checked,
-                }))
-              }
-              className="w-4 h-4"
-            />
-
-            <span className="text-sm text-[var(--muted-dark)]">
-              Anonim paylaş
-            </span>
-          </label>
-        </div>
-      </div>
 
         </div>
         )}

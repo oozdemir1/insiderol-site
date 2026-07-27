@@ -296,7 +296,7 @@ const validateStep2 = () => {
   }
 
   if (!formData.management) {
-    nextErrors.management = "Yönetim kalitesi seçimi orunlu.";
+    nextErrors.management = "Yönetim kalitesi seçimi zorunlu.";
   }
 
   if (!formData.career_growth) {
@@ -308,7 +308,7 @@ const validateStep2 = () => {
   }
 
   if (!formData.transparency) {
-    nextErrors.transparency = "İletişim şeffaflığı seçimi orunlu.";
+    nextErrors.transparency = "İletişim şeffaflığı seçimi zorunlu.";
   }
 
   if (!formData.employee_value) {
@@ -439,11 +439,13 @@ if (!user) {
               submission_count: 1,
             });
 
+        // An orphaned suggestion here (no matching pending_roles row) can
+        // never be approved by an admin — fail the whole submission
+        // instead of just logging it.
         if (error) {
-          console.error(
-            "pending role insert failed",
-            error
-          );
+          console.warn(error);
+          setSubmitError(translateSubmissionError(error.message));
+          return;
         }
         }
       }
@@ -475,7 +477,7 @@ if (isNewCompany) {
 
   } else {
 
-    await supabase
+    const { error: pendingCompanyError } = await supabase
       .from("pending_companies")
       .insert({
         suggested_name:
@@ -493,6 +495,11 @@ if (isNewCompany) {
         hq_city: formData.hqCity,
       });
 
+    if (pendingCompanyError) {
+      console.warn(pendingCompanyError);
+      setSubmitError(translateSubmissionError(pendingCompanyError.message));
+      return;
+    }
   }
 }
 
@@ -805,6 +812,7 @@ setSubmitted(true);
               clearError("title");
             }
           }}
+          placeholder="Örn: Güçlü ekip kültürü, gelişim fırsatları var"
           className={`form-field ${
             errors.title ? "!border-red-500" : ""
           }`}
@@ -1325,7 +1333,7 @@ setSubmitted(true);
 
             <div>
                <label className="form-label block mb-3">
-                Genel Değerlendirme
+                Genel Puan
               </label>
 
            <div className="flex gap-1">

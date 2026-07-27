@@ -212,10 +212,20 @@ export default async function ExplorePage({
     Math.ceil(items.length / PAGE_SIZE)
   );
 
-  const pagedItems = items.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
+  // A stale/hand-edited ?page= beyond the real last page would otherwise
+  // return an empty slice with no way back except repeatedly clicking
+  // "Önceki" — clamp to the real last page instead.
+  const clampedPage = Math.min(currentPage, totalPages);
+
+  // userId only exists on these objects for the author-profile lookup
+  // above — strip it here, right at the server/client boundary, so a raw
+  // user_id (anonymous posts included) never reaches the browser.
+  const pagedItems = items
+    .slice(
+      (clampedPage - 1) * PAGE_SIZE,
+      clampedPage * PAGE_SIZE
+    )
+    .map(({ userId, ...rest }) => rest);
 
   return (
     <ExploreClient
@@ -223,7 +233,7 @@ export default async function ExplorePage({
       typeFilter={typeFilter}
       pagedItems={pagedItems}
       itemCount={items.length}
-      currentPage={currentPage}
+      currentPage={clampedPage}
       totalPages={totalPages}
     />
   );

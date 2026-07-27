@@ -2,15 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 
 const SORT_OPTIONS = [
   { value: "", label: "Alfabetik (A-Z)" },
-  { value: "newest", label: "Son Eklenenler" },
-  { value: "rating", label: "En Yüksek Puan" },
   { value: "reviews", label: "En Çok Yorum" },
   { value: "salary", label: "En Yüksek Maaş Ortalaması" },
   { value: "salaryCount", label: "En Çok Maaş Verisi" },
+  { value: "rating", label: "En Yüksek Puan" },
+  { value: "newest", label: "Son Eklenenler" },
 ];
 
 type Props = {
@@ -67,8 +67,27 @@ export default function SortDropdown({
         onClick={() => setShowDropdown((prev) => !prev)}
         className="form-field !w-[200px] flex items-center justify-between gap-2"
       >
-        <span className="truncate">{selectedLabel}</span>
-        <ChevronDown size={16} className="shrink-0 text-black/40" />
+        <span className={`truncate ${sort ? "" : "text-[var(--muted-dark)]"}`}>
+          {selectedLabel}
+        </span>
+
+        {sort ? (
+          <span
+            role="button"
+            aria-label="Temizle"
+            onClick={(e) => {
+              // Clearing shouldn't also toggle the dropdown open —
+              // this sits inside the trigger button, not beside it.
+              e.stopPropagation();
+              selectSort("");
+            }}
+            className="shrink-0 text-black/40 hover:text-black/70"
+          >
+            <X size={16} />
+          </span>
+        ) : (
+          <ChevronDown size={16} className="shrink-0 text-black/40" />
+        )}
       </button>
 
       {showDropdown && (

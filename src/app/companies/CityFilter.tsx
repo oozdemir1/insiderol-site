@@ -19,7 +19,7 @@ export default function CityFilter({
   return (
     <div className="relative">
       <input type="hidden" name="hqCity" value={cityId ?? ""} />
-      <TurkishCitySelect value={cityId} onChange={setCityId} className="pr-8" />
+      <TurkishCitySelect value={cityId} onChange={setCityId} mutedPlaceholder className="pr-8" />
 
       {cityId !== null ? (
         <button

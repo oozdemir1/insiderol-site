@@ -4,16 +4,52 @@ import { createClient } from "@/lib/server";
 import { revalidatePath } from "next/cache";
 import { slugifyCompanyName } from "@/app/constants/companyUtils";
 import { normalizeSearchText } from "@/app/constants/normalizationUtils";
+import { MODERATED_TABLES } from "./moderatedTables";
 
+async function requireAdmin(
+  supabase: Awaited<ReturnType<typeof createClient>>
+) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-const MODERATED_TABLES = [
-  "salaries",
-  "company_reviews",
-  "company_work_style",
-  "interview_experiences",
-  "company_benefits",
-  "company_compensation",
-];
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.is_admin) {
+    throw new Error("Unauthorized");
+  }
+}
+
+export async function markContactMessageRead(id: number) {
+  const supabase = await createClient();
+
+  await requireAdmin(supabase);
+
+  await supabase
+    .from("contact_messages")
+    .update({ read_at: new Date().toISOString() })
+    .eq("id", id);
+
+  revalidatePath("/admin/moderation");
+}
+
+export async function deleteContactMessage(id: number) {
+  const supabase = await createClient();
+
+  await requireAdmin(supabase);
+
+  await supabase.from("contact_messages").delete().eq("id", id);
+
+  revalidatePath("/admin/moderation");
+}
 
 
 
@@ -80,17 +116,9 @@ if (!roleId) {
 }
 
 for (const table of MODERATED_TABLES) {
-  const before = await supabase
-    .from(table)
-    .select(
-      "id,pending_role_name,role_status"
-    )
-    .eq(
-      "pending_role_name",
-      roleName
-    );
-
-  const result = await supabase
+  // Zero matched rows here is expected (not every table has an entry for
+  // every role) — only a real Postgres/RLS error should fail this loudly.
+  const { error: propagateError } = await supabase
     .from(table)
     .update({
       role_id: roleId,
@@ -104,9 +132,11 @@ for (const table of MODERATED_TABLES) {
     .eq(
       "role_status",
       "pending"
-    )
-    .select();
+    );
 
+  if (propagateError) {
+    throw new Error(propagateError.message);
+  }
 }
 
   // Mark pending role approved
@@ -405,9 +435,7 @@ const { error } = await supabase
 
   
 if (pendingRole?.suggested_name) {
-  for (const table of MODERATED_TABLES.filter(
-    (t) => t !== "salaries"
-  )) {
+  for (const table of MODERATED_TABLES) {
     const { error } =
       await supabase
         .from(table)
@@ -588,29 +616,50 @@ export async function approveContent(
 ) {
   const supabase = await createClient();
 
-  const {
-  data: { user },
-} = await supabase.auth.getUser();
+  await requireAdmin(supabase);
 
-  await supabase
+  if (!MODERATED_TABLES.includes(tableName)) {
+    throw new Error("Invalid table");
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data, error } = await supabase
     .from(tableName)
     .update({
       moderation_status: "approved",
     })
-    .eq("id", id);
+    .eq("id", id)
+    .select();
 
-    await supabase
-  .from("content_moderation_log")
-const { error } = await supabase
-  .from("content_moderation_log")
-  .insert({
-    table_name: tableName,
-    content_id: id,
-    action: "approved",
-    performed_by: user?.id ?? null,
-  });
+  if (error) {
+    throw new Error(error.message);
+  }
 
-    revalidatePath("/admin/moderation");
+  // Same "RLS silently matched 0 rows" failure mode as updateCompany —
+  // fail loudly instead of showing a moderator a fake success.
+  if (!data || data.length === 0) {
+    throw new Error(
+      "approveContent: 0 rows updated (muhtemelen RLS engelledi)"
+    );
+  }
+
+  const { error: logError } = await supabase
+    .from("content_moderation_log")
+    .insert({
+      table_name: tableName,
+      content_id: id,
+      action: "approved",
+      performed_by: user?.id ?? null,
+    });
+
+  if (logError) {
+    throw new Error(logError.message);
+  }
+
+  revalidatePath("/admin/moderation");
 }
 
 export async function rejectContent(
@@ -619,27 +668,48 @@ export async function rejectContent(
 ) {
   const supabase = await createClient();
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  await requireAdmin(supabase);
 
-  await supabase
+  if (!MODERATED_TABLES.includes(tableName)) {
+    throw new Error("Invalid table");
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data, error } = await supabase
     .from(tableName)
     .update({
       moderation_status: "rejected",
     })
-    .eq("id", id);
+    .eq("id", id)
+    .select();
 
-    await supabase
-  .from("content_moderation_log")
-  .insert({
-    table_name: tableName,
-    content_id: id,
-    action: "rejected",
-    performed_by: user?.id ?? null,
-  });
+  if (error) {
+    throw new Error(error.message);
+  }
 
-    revalidatePath("/admin/moderation");
+  if (!data || data.length === 0) {
+    throw new Error(
+      "rejectContent: 0 rows updated (muhtemelen RLS engelledi)"
+    );
+  }
+
+  const { error: logError } = await supabase
+    .from("content_moderation_log")
+    .insert({
+      table_name: tableName,
+      content_id: id,
+      action: "rejected",
+      performed_by: user?.id ?? null,
+    });
+
+  if (logError) {
+    throw new Error(logError.message);
+  }
+
+  revalidatePath("/admin/moderation");
 }
 
 export async function saveContentEdits(
@@ -647,8 +717,17 @@ export async function saveContentEdits(
 ) {
   "use server";
 
+  const supabase =
+    await createClient();
+
+  await requireAdmin(supabase);
+
   const tableName =
     String(formData.get("tableName"));
+
+  if (!MODERATED_TABLES.includes(tableName)) {
+    throw new Error("Invalid table");
+  }
 
   const id = Number(
     formData.get("id")
@@ -659,9 +738,6 @@ export async function saveContentEdits(
 
   const review =
     String(formData.get("review") ?? "");
-
-  const supabase =
-    await createClient();
 
   let updateData: any = {};
 

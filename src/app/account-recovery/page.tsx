@@ -33,13 +33,17 @@ export default function AccountRecoveryPage() {
     let resetEmail = identifier.trim();
 
     if (!resetEmail.includes("@")) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("email")
-        .eq("username", resetEmail)
-        .single();
+      // Resolved via a server-side route (service-role lookup), not a
+      // direct client query — see src/app/api/auth/resolve-username.
+      const resolveRes = await fetch("/api/auth/resolve-username", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: resetEmail }),
+      });
 
-      if (!profile) {
+      const { email } = await resolveRes.json();
+
+      if (!email) {
         // No matching username — show the same "sent" success state
         // anyway rather than a distinct error. A different message
         // here would let someone enumerate valid usernames the same
@@ -49,7 +53,7 @@ export default function AccountRecoveryPage() {
         return;
       }
 
-      resetEmail = profile.email;
+      resetEmail = email;
     }
 
     // Supabase never errors here for "email not found" either (handled

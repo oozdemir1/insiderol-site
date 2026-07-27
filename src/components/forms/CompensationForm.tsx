@@ -90,6 +90,7 @@ export default function CompensationForm({
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
   const [isNewCompany, setIsNewCompany] =  useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -413,7 +414,13 @@ const roleStatus =
           submission_count: 1,
         });
 
- 
+    // An orphaned suggestion here (no matching pending_roles row) can
+    // never be approved by an admin — fail the whole submission.
+    if (error) {
+      console.warn(error);
+      setSubmitError(translateSubmissionError(error.message));
+      return;
+    }
   }
 }
 
@@ -449,7 +456,7 @@ if (
 
   } else {
 
-    await supabase
+    const { error: pendingCompanyError } = await supabase
       .from("pending_companies")
       .insert({
         suggested_name:
@@ -466,6 +473,12 @@ if (
 
         hq_city: formData.hqCity,
       });
+
+    if (pendingCompanyError) {
+      console.warn(pendingCompanyError);
+      setSubmitError(translateSubmissionError(pendingCompanyError.message));
+      return;
+    }
   }
 }
 
@@ -547,9 +560,7 @@ if (
       return;
     }
 
-    
-    setSubmitted(true);
-      localStorage.removeItem(
+    localStorage.removeItem(
       draftKey
     );
     setFormData({
@@ -569,6 +580,23 @@ if (
 
     setRoleSearch("");
 
+    if (mode === "edit") {
+
+      setSaveSuccess(true);
+
+      setTimeout(() => {
+
+        router.push(
+          "/my-posts?tab=Ücret Politikası"
+        );
+
+      }, 500);
+
+      return;
+
+    }
+
+    setSubmitted(true);
 
     } finally {
 
@@ -1233,6 +1261,43 @@ return (
     </div>
   </form>
   )}
+
+        {saveSuccess && (
+
+      <div
+        className="
+          mt-3
+
+          flex items-center justify-center
+          gap-2
+
+          rounded-xl
+
+
+          border border-green-200
+
+          px-4 py-3
+
+          text-sm
+          font-medium
+
+          text-green-600
+        "
+          style={{
+          backgroundColor:
+            "rgba(34, 197, 94, 0.08)",
+        }}
+      >
+
+                <span>✓</span>
+
+                <span>
+                  Değişiklikler kaydedildi!
+                </span>
+
+              </div>
+
+            )}
  {showAuthModal && (
         <div
          onClick={() => setShowAuthModal(false)}

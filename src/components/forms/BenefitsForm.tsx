@@ -396,15 +396,16 @@ const roleStatus =
           suggested_name:
             pendingRoleName,
           user_id: user.id,
-          source_type: "benefit",
+          source_type: "benefits",
           submission_count: 1,
         });
 
+    // An orphaned suggestion here (no matching pending_roles row) can
+    // never be approved by an admin — fail the whole submission.
     if (error) {
-      console.error(
-        "pending role insert failed",
-        error
-      );
+      console.warn(error);
+      setSubmitError(translateSubmissionError(error.message));
+      return;
     }
   }
 }
@@ -441,7 +442,7 @@ if (
 
   } else {
 
-    await supabase
+    const { error: pendingCompanyError } = await supabase
       .from("pending_companies")
       .insert({
         suggested_name:
@@ -458,6 +459,12 @@ if (
 
         hq_city: formData.hqCity,
       });
+
+    if (pendingCompanyError) {
+      console.warn(pendingCompanyError);
+      setSubmitError(translateSubmissionError(pendingCompanyError.message));
+      return;
+    }
   }
 }
 

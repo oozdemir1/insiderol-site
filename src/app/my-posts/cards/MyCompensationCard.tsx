@@ -5,6 +5,7 @@ import IconActionButton from "@/components/ui/IconActionButton";
 import { Trash2 } from "lucide-react";
 import DeleteConfirmPopup from "@/components/ui/DeleteConfirmPopup";
 import { turkishCities } from "@/app/constants/turkishCities";
+import PostStatusBadge from "./PostStatusBadge";
 
 type Props = {
   compensation: any;
@@ -197,6 +198,12 @@ useEffect(() => {
   </div>
 
   <div className="ml-auto flex items-center gap-2">
+
+  <PostStatusBadge
+    moderationStatus={compensation.moderation_status}
+    roleStatus={compensation.role_status}
+    companyStatus={compensation.company_status}
+  />
 
   <div
   className="

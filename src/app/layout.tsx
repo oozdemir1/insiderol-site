@@ -14,9 +14,40 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://insiderol.com";
+
 export const metadata: Metadata = {
-  title: "Insiderol",
-  description: "Anonim maaş ve şirket platformu",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Insiderol | Anonim Maaş ve Şirket Yorumları",
+    template: "%s | Insiderol",
+  },
+  description:
+    "Türkiye'deki şirketler için anonim maaş, çalışan yorumu ve mülakat deneyimi platformu. Gerçek çalışan verileriyle bilinçli kariyer kararları al.",
+  openGraph: {
+    type: "website",
+    locale: "tr_TR",
+    siteName: "Insiderol",
+    title: "Insiderol | Anonim Maaş ve Şirket Yorumları",
+    description:
+      "Türkiye'deki şirketler için anonim maaş, çalışan yorumu ve mülakat deneyimi platformu.",
+    url: siteUrl,
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Insiderol | Anonim Maaş ve Şirket Yorumları",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Insiderol | Anonim Maaş ve Şirket Yorumları",
+    description:
+      "Türkiye'deki şirketler için anonim maaş, çalışan yorumu ve mülakat deneyimi platformu.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
@@ -26,7 +57,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="tr"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-screen flex flex-col bg-black text-white">

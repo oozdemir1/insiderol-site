@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import IconActionButton from "@/components/ui/IconActionButton";
+import PostStatusBadge from "./PostStatusBadge";
 
 import {
   useEffect,
@@ -252,6 +253,12 @@ const getSaturdayPolicy = (
       gap-2
     "
   >
+
+    <PostStatusBadge
+      moderationStatus={workStyle.moderation_status}
+      roleStatus={workStyle.role_status}
+      companyStatus={workStyle.company_status}
+    />
 
     <div
       className="

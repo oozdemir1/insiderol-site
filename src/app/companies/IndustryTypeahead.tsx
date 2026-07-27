@@ -126,7 +126,7 @@ export default function IndustryTypeahead({
             selectIndustry(filteredIndustries[highlightedIndex]);
           }
         }}
-        className="form-field pr-8 placeholder:!text-[var(--text-dark)]"
+        className="form-field pr-8"
 
       />
 

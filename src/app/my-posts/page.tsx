@@ -27,6 +27,28 @@ import { redirect } from "next/navigation";
       ascending: false,
     });
 
+  // Every row here already belongs to this account, so a single profile
+  // lookup (rather than the /explore-style batch-by-user_id) covers all of
+  // it — attached only where the post itself wasn't submitted anonymously.
+  const { data: ownProfile } = await supabase
+    .from("profiles")
+    .select("username, avatar_url")
+    .eq("id", user.id)
+    .single();
+
+  const withAuthor = (rows: any[]) =>
+    rows.map((row) =>
+      row.is_anonymous
+        ? row
+        : {
+            ...row,
+            authorUsername: ownProfile?.username ?? null,
+            authorAvatarUrl: ownProfile?.avatar_url ?? null,
+          }
+    );
+
+  const reviewsWithAuthor = withAuthor(reviews || []);
+
     const { data: salaries } = await supabase
     .from("salaries")
     .select(`
@@ -38,6 +60,8 @@ import { redirect } from "next/navigation";
     .order("created_at", {
         ascending: false,
     });
+
+  const salariesWithAuthor = withAuthor(salaries || []);
 
    const { data: workStyles } = await supabase
   .from("company_work_style")
@@ -94,8 +118,8 @@ const { data: compensations } = await supabase
     <main className="w-full max-w-6xl mx-auto px-4">
 
       <MyPostsClient
-        reviews={reviews || []}
-        salaries={salaries || []}
+        reviews={reviewsWithAuthor}
+        salaries={salariesWithAuthor}
         workStyles={workStyles || []}
         benefits={benefits ?? []}
         compensations={compensations ?? []}

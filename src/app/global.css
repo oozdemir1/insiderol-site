@@ -3,7 +3,7 @@
 :root {
 
   /* MAIN BACKGROUND */
-  --background: #f4f1ea;
+  --background: #f9f9f9;
 
   /* DARK SURFACES (navbar / hero / footer) */
   --surface: #1b2421;
@@ -11,7 +11,7 @@
 
   /* LIGHT SECTIONS */
   --section-light: #f9f9f9;
-  --section-light-2: #ffffff;
+  --section-light-2: #fcfcfc;
 
   /* LIGHT CARDS */
   --card-light: rgba(255, 255, 255, 0.72);
@@ -492,39 +492,13 @@ select {
 
 /* How It Works Cards */
 .hiw-card {
-  background-color: #446600; /* çok koyu lime / yeşil ton */
+  background-color: var(--card-green-2);
   transition: background-color 0.3s ease;
 }
 
 .hiw-card:hover {
-  background-color: #669900; /* hover’da biraz daha parlak ve canlı */
+  background-color: var(--card-green-2-hover);
 }
-/* Trend Sirket Bar Graph */
-.trend-bar-company {
-  /* Normal durumda gradient */
-  background: linear-gradient(to top, #0B9A6D, #7BBD00); /* Accent → Lime */
-  border-radius: 0.75rem; /* Tailwind rounded-t-xl eşdeğeri */
-  transition: transform 0.3s ease; /* hover animasyon için */
-}
-
-/* Opsiyonel: hover efekti sadece yükselme / scale */
-.trend-bar-company:hover {
-  transform: scaleY(1.01); /* hafif büyüme */
-}
-
-/* Trend Maas Bar Graph */
-.trend-bar-salary {
-  /* Normalde gradient */
-  background: linear-gradient(to top, #0B9A6D, #008934); /* koyu → açık */
-  border-radius: 0.75rem;
-  transition: transform 0.3s ease;
-}
-
-/* Hoverda sadece hafif büyüme / animasyon */
-.trend-bar-salary:hover {
-  transform: scaleY(1.01);
-}
-
 /* Son Yorumlar Card */
 .comments-card {
   background-color: var(--card-green-3);

@@ -11,6 +11,13 @@ export default function AuthGoogleButton() {
       options: {
           redirectTo:
             `${window.location.origin}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`,
+          // Without this, Google silently reuses whatever Google session
+          // is already active in the browser and skips the account
+          // chooser entirely — surprising right after logging out and
+          // clicking this again expecting to be asked which account.
+          queryParams: {
+            prompt: "select_account",
+          },
       },
     });
   }

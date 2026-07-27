@@ -31,7 +31,10 @@ export type FeedItem = {
   title?: string;
   review?: string;
   overallRating?: number;
-  userId: string;
+  // Server-only — used to batch the author-profile lookup in page.tsx,
+  // then stripped before pagedItems reaches this client component (a raw
+  // user_id has no reason to ever cross that boundary, anonymous or not).
+  userId?: string;
   isAnonymous: boolean;
   authorUsername?: string | null;
   authorAvatarUrl?: string | null;
@@ -112,7 +115,7 @@ export default function FeedCard({ item }: { item: FeedItem }) {
 
             {item.kind === "salary" && (
               <p className="mt-1 text-lg font-semibold text-[var(--accent)]">
-                ₺{(item.salary || 0).toLocaleString("tr-TR")}
+                {(item.salary || 0).toLocaleString("tr-TR")}₺
               </p>
             )}
 

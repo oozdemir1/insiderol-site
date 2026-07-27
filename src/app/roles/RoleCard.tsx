@@ -44,7 +44,7 @@ export default function RoleCard({
     <div className="mt-3">
       <div className="text-lg md:text-xl font-bold text-[var(--accent)] tracking-tight">
         {averageSalary > 0
-          ? `₺${averageSalary.toLocaleString("tr-TR")}`
+          ? `${averageSalary.toLocaleString("tr-TR")}₺`
           : "-"}
       </div>
 

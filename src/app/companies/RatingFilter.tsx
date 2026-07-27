@@ -54,7 +54,9 @@ export default function RatingFilter({
         onClick={() => setShowDropdown((prev) => !prev)}
         className="form-field pr-8 text-left"
       >
-        <span>{selectedLabel}</span>
+        <span className={rating ? "" : "text-[var(--muted-dark)]"}>
+          {selectedLabel}
+        </span>
       </button>
 
       {rating ? (

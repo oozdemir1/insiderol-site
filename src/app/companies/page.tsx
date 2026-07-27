@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/server";
 import { Search } from "lucide-react";
+import type { Metadata } from "next";
 import CompaniesList from "./CompaniesList";
 import SortDropdown from "./SortDropdown";
 import CityFilter from "./CityFilter";
@@ -9,6 +10,18 @@ import { normalizeSearchText } from "../constants/normalizationUtils";
 import Pagination from "@/components/Pagination";
 
 const PAGE_SIZE = 24;
+
+// Filter/sort/pagination query params all resolve to the same underlying
+// content set, just reordered/narrowed — canonicalize to the bare route so
+// they don't compete with each other (or the real listing) in the index.
+export const metadata: Metadata = {
+  title: "Şirketler",
+  description:
+    "Türkiye'deki şirketleri anonim maaş, çalışan yorumu ve mülakat deneyimlerine göre keşfet, karşılaştır.",
+  alternates: {
+    canonical: "/companies",
+  },
+};
 
 export default async function CompaniesPage({
   searchParams,
@@ -32,113 +45,127 @@ export default async function CompaniesPage({
   const hqCityFilter = hqCity?.trim() || "";
   const averageRatingFilter = averageRating?.trim() || "";
   const sortFilter = sort?.trim() || "";
-  const currentPage = Math.max(1, Number(page) || 1);
+  const requestedPage = Math.max(1, Number(page) || 1);
+
+  // The "×" only clears the typed search text — it shouldn't also wipe
+  // whichever other filters are active.
+  const clearSearchHref = (() => {
+    const params = new URLSearchParams();
+    if (industryFilter) params.set("industry", industryFilter);
+    if (hqCityFilter) params.set("hqCity", hqCityFilter);
+    if (averageRatingFilter) params.set("averageRating", averageRatingFilter);
+    if (sortFilter) params.set("sort", sortFilter);
+    const qs = params.toString();
+    return qs ? `/companies?${qs}` : "/companies";
+  })();
+
   const hasFilters =
   !!searchQuery ||
   !!industryFilter ||
   !!hqCityFilter ||
   !!averageRatingFilter;
 
-  let query = supabase
-    .from("companies")
-    .select(`
-      *,
-      company_reviews(id),
-      salaries(id)
-    `, { count: "exact" });
+  // Rebuildable so an out-of-range page (stale bookmark, hand-edited URL)
+  // can be re-queried with a clamped range once the real count is known,
+  // instead of just silently returning an empty page with no way back.
+  const buildFilteredQuery = () => {
+    let q = supabase
+      .from("companies")
+      .select(`
+        *,
+        company_reviews(id),
+        salaries(id)
+      `, { count: "exact" });
 
-if (searchQuery) {
-  query = query.ilike(
-    "search_name",
-    `%${normalizeSearchText(searchQuery)}%`
-  );
-}
- 
-  if (industryFilter) {
-  query = query.eq(
-    "industry",
-    Number(industryFilter)
-  );
-}
-
-if (hqCityFilter) {
-  query = query.eq(
-    "hq_city",
-    Number(hqCityFilter)
-  );
-}
-
-if (averageRatingFilter) {
-  query = query.gte(
-    "average_rating",
-    Number(averageRatingFilter)
-  );
-}
-
-
-
-if (sortFilter === "newest") {
-  query = query.order(
-    "created_at",
-    {
-      ascending: false,
+    if (searchQuery) {
+      q = q.ilike(
+        "search_name",
+        `%${normalizeSearchText(searchQuery)}%`
+      );
     }
+
+    if (industryFilter) {
+      q = q.eq("industry", Number(industryFilter));
+    }
+
+    if (hqCityFilter) {
+      q = q.eq("hq_city", Number(hqCityFilter));
+    }
+
+    if (averageRatingFilter) {
+      q = q.gte("average_rating", Number(averageRatingFilter));
+    }
+
+    if (sortFilter === "newest") {
+      q = q.order("created_at", { ascending: false });
+    } else if (sortFilter === "rating") {
+      q = q
+        .order("average_rating", { ascending: false })
+        .order("review_count", { ascending: false });
+    } else if (sortFilter === "reviews") {
+      q = q
+        .order("review_count", { ascending: false })
+        .order("average_rating", { ascending: false });
+    } else if (sortFilter === "salary") {
+      q = q
+        .order("average_salary", { ascending: false })
+        .order("salary_count", { ascending: false });
+    } else if (sortFilter === "salaryCount") {
+      q = q
+        .order("salary_count", { ascending: false })
+        .order("average_salary", { ascending: false });
+    } else {
+      q = q.order("name", { ascending: true });
+    }
+
+    return q;
+  };
+
+  let currentPage = requestedPage;
+
+  let result = await buildFilteredQuery().range(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE - 1
   );
 
-} else if (sortFilter === "rating") {
-  query = query
-    .order("average_rating", {
-      ascending: false,
-    })
-    .order("review_count", {
-      ascending: false,
-    });
+  if (result.error) {
+    // PostgREST returns 416 "Range Not Satisfiable" (not just an empty
+    // page) when the requested offset exceeds the real row count — count
+    // comes back null on that response too, so re-fetch page 1 first to
+    // learn the real total and land on its actual last page.
+    console.error(result.error);
 
-} else if (sortFilter === "reviews") {
-  query = query
-    .order("review_count", {
-      ascending: false,
-    })
-    .order("average_rating", {
-      ascending: false,
-    });
+    const page1 = await buildFilteredQuery().range(0, PAGE_SIZE - 1);
 
-} else if (sortFilter === "salary") {
-  query = query
-    .order("average_salary", {
-      ascending: false,
-    })
-    .order("salary_count", {
-      ascending: false,
-    });
+    const realTotalPages = Math.max(
+      1,
+      Math.ceil((page1.count || 0) / PAGE_SIZE)
+    );
 
-} else if (sortFilter === "salaryCount") {
-  query = query
-    .order("salary_count", {
-      ascending: false,
-    })
-    .order("average_salary", {
-      ascending: false,
-    });
+    currentPage = Math.min(currentPage, realTotalPages);
 
-} else {
-  query = query.order("name", {
-    ascending: true,
-  });
-}
+    result =
+      currentPage === 1
+        ? page1
+        : await buildFilteredQuery().range(
+            (currentPage - 1) * PAGE_SIZE,
+            currentPage * PAGE_SIZE - 1
+          );
 
-query = query.range(
-  (currentPage - 1) * PAGE_SIZE,
-  currentPage * PAGE_SIZE - 1
-);
+    if (result.error) {
+      console.error(result.error);
 
-const { data: companies, error, count } =
-  await query;
-
-
-  if (error) {
-    console.error(error);
+      // The re-fetch at the clamped page failed on its own (separately
+      // from the original out-of-range error) — fall back to the page 1
+      // result we already have rather than showing a stale/empty page
+      // with a misleading "0 Kayıtlı Şirket".
+      currentPage = 1;
+      result = page1;
+    }
   }
+
+  const companies = result.data;
+  const count = result.count;
 
   const totalPages = Math.max(
     1,
@@ -181,11 +208,7 @@ const { data: companies, error, count } =
 
 {q ? (
   <a
-    href={
-      industry
-        ? `/companies?industry=${industry}`
-        : "/companies"
-    }
+    href={clearSearchHref}
     className="absolute right-3 top-1/2 -translate-y-1/2 text-black/50 hover:text-black"
   >
     ✕
