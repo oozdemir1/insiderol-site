@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Tabs from "@/components/ui/Tabs";
 import {
   useRouter,
@@ -18,16 +18,23 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+export default function SharePage() {
+  return (
+    <Suspense fallback={null}>
+      <ShareTabs />
+    </Suspense>
+  );
+}
 
-export default function CompanyTabs({
+function ShareTabs({
   companyId,
   companyName,
   hqCity,
 }: {
-  companyId: number;
-  companyName: string;
-  hqCity: number;
-}) {
+  companyId?: number;
+  companyName?: string;
+  hqCity?: number;
+} = {}) {
 
   const router = useRouter();
   const searchParams =
