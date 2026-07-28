@@ -52,7 +52,7 @@ export default function CompanyHeaderCard({
           <ChevronDown className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
         )}
 
-        <span className="text-lg md:text-2xl text-[var(--text-dark)]">
+        <span className="text-xl md:text-2xl text-[var(--text-dark)]">
           <span className="font-medium text-[var(--text-dark)]">
             {companyName}
           </span>
@@ -71,7 +71,7 @@ export default function CompanyHeaderCard({
           {/* Logo */}
           <div className="flex-shrink-0 self-center text-center md:text-left relative mb-6 md:mb-0">
             {logoContent}
-            <p className="flex items-center justify-center gap-1 text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-0.5 max-w-24 mx-auto text-center">
+            <p className="flex items-center justify-center gap-1 text-[9px] md:text-[10px] tracking-[0.1em] md:tracking-[0.14em] text-[var(--muted-dark)]/80 mt-0.5 max-w-24 mx-auto text-center">
               <MapPin size={10} className="text-red-500 shrink-0" />
               {companyCityName}
             </p>
@@ -83,30 +83,30 @@ export default function CompanyHeaderCard({
           <div className="flex-1 flex flex-col md:items-start items-center gap-4">
             <div className="grid grid-cols-3 gap-3 md:gap-6 w-full">
               <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
-                <p className="text-[var(--text-dark)] text-[20px] font-semibold tracking-tight leading-none">
+                <p className="text-[var(--text-dark)] text-[16px] md:text-[20px] font-semibold tracking-tight leading-none">
                   ⭐{averageReviewRating}
                 </p>
-                <p className="w-full truncate text-center text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
+                <p className="w-full truncate text-center text-[9px] md:text-[10px] tracking-[0.1em] md:tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
                   {reviewCount} Yorum
                 </p>
               </div>
 
               <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
-                <div className="text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
+                <div className="text-[16px] md:text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
                   {averageSalary > 0
                     ? `${averageSalary.toLocaleString("tr-TR")}₺`
                     : "-"}
                 </div>
-                <p className="w-full truncate text-center text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
+                <p className="w-full truncate text-center text-[9px] md:text-[10px] tracking-[0.1em] md:tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
                   {salaryCount} Paylaşım
                 </p>
               </div>
 
               <div className="card-light card-compact flex flex-col items-center justify-center gap-3 text-center">
-                <div className="text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
+                <div className="text-[16px] md:text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
                   {industryName}
                 </div>
-                <p className="w-full truncate text-center text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-1">
+                <p className="w-full truncate text-center text-[9px] md:text-[10px] tracking-[0.1em] md:tracking-[0.14em] text-[var(--muted-dark)]/80 mt-1">
                   Sektör
                 </p>
               </div>
