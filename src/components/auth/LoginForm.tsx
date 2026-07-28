@@ -216,7 +216,7 @@ export default function LoginForm({
 
   <button
     type="submit"
-    disabled={loading || !captchaToken}
+    disabled={loading}
     className="auth-submit-btn disabled:opacity-50"
   >
     {loading ? "Giriş yapılıyor..." : "Giriş Yap"}

@@ -184,7 +184,7 @@ export default function ContactPage() {
 
               <button
                 type="submit"
-                disabled={loading || (CAPTCHA_REQUIRED && !captchaToken)}
+                disabled={loading}
                 className="btn-accent w-full disabled:opacity-50"
               >
                 {loading ? (

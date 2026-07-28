@@ -151,7 +151,7 @@ export default function AccountRecoveryPage() {
 
                 <button
                   type="submit"
-                  disabled={loading || !captchaToken}
+                  disabled={loading}
                   className="auth-submit-btn disabled:opacity-50"
                 >
                   {loading ? "Gönderiliyor..." : "Sıfırlama Bağlantısı Gönder"}

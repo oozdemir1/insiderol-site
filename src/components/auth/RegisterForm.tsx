@@ -324,7 +324,7 @@ export default function RegisterForm() {
 
       <button
         type="submit"
-        disabled={loading || !captchaToken || !agreedToTerms}
+        disabled={loading}
         className="auth-submit-btn disabled:opacity-50"
       >
         {loading ? "Kaydediliyor..." : "Kaydol"}
