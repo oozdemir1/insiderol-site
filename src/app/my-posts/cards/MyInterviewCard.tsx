@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Ghost, Pencil } from "lucide-react";
 import IconActionButton from "@/components/ui/IconActionButton";
 import { Trash2 } from "lucide-react";
 import DeleteConfirmPopup from "@/components/ui/DeleteConfirmPopup";
@@ -126,7 +126,21 @@ const difficultyLabel =
   "
 >
 
-  <div>
+  <div className="flex items-start gap-2.5 min-w-0">
+
+    <div className="w-9 h-9 rounded-full bg-[var(--surface-2)] flex items-center justify-center shrink-0 overflow-hidden">
+      {!interview.is_anonymous && interview.authorAvatarUrl ? (
+        <img
+          src={interview.authorAvatarUrl}
+          alt=""
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <Ghost size={16} className="text-[var(--accent)]" />
+      )}
+    </div>
+
+    <div className="min-w-0">
 
     <h2
       className="
@@ -134,6 +148,7 @@ const difficultyLabel =
         font-semibold
 
         text-[var(--text-dark)]
+        truncate
       "
     >
       {interview.companies?.name}
@@ -143,11 +158,19 @@ const difficultyLabel =
       className="
         text-sm
         text-[var(--muted-dark)]
-        mb-3
+        mt-1
       "
     >
       {interview.roles?.name}
     </p>
+
+    <p className="text-xs text-[var(--muted-dark)] mt-0.5 mb-3">
+      {!interview.is_anonymous && interview.authorUsername
+        ? `@${interview.authorUsername}`
+        : "anonim"}
+    </p>
+
+    </div>
 
   </div>
 
@@ -158,28 +181,6 @@ const difficultyLabel =
     roleStatus={interview.role_status}
     companyStatus={interview.company_status}
   />
-
-  <div
-    className="
-      shrink-0
-
-      rounded-md
-
-      bg-black/5
-
-      px-2.5
-      py-1.5
-
-      text-xs
-      font-medium
-
-      text-[var(--muted-dark)]
-    "
-  >
-    {interview.is_anonymous
-      ? "Anonim"
-      : "Kullanıcı adı"}
-  </div>
 
   <div
     className="

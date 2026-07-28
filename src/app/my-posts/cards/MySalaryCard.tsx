@@ -165,6 +165,7 @@ const getCityName = (
               text-xl
               font-semibold
               text-[var(--text-dark)]
+              truncate
             "
           >
             {salary.companies?.name}

@@ -75,6 +75,8 @@ import { redirect } from "next/navigation";
     ascending: false,
   });
 
+  const workStylesWithAuthor = withAuthor(workStyles || []);
+
   const {
   data: benefits,
   error: benefitsError,
@@ -90,6 +92,8 @@ import { redirect } from "next/navigation";
     ascending: false,
   });
 
+  const benefitsWithAuthor = withAuthor(benefits || []);
+
 const { data: compensations } = await supabase
   .from("company_compensation")
   .select(`
@@ -101,6 +105,8 @@ const { data: compensations } = await supabase
   .order("created_at", {
     ascending: false,
   });
+
+  const compensationsWithAuthor = withAuthor(compensations || []);
 
   const { data: interviews } = await supabase
   .from("interview_experiences")
@@ -114,16 +120,18 @@ const { data: compensations } = await supabase
     ascending: false,
   });
 
+  const interviewsWithAuthor = withAuthor(interviews || []);
+
   return (
     <main className="w-full max-w-6xl mx-auto px-4">
 
       <MyPostsClient
         reviews={reviewsWithAuthor}
         salaries={salariesWithAuthor}
-        workStyles={workStyles || []}
-        benefits={benefits ?? []}
-        compensations={compensations ?? []}
-        interviews={interviews || []}
+        workStyles={workStylesWithAuthor}
+        benefits={benefitsWithAuthor}
+        compensations={compensationsWithAuthor}
+        interviews={interviewsWithAuthor}
       />
 
     </main>

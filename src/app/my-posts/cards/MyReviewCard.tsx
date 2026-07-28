@@ -132,7 +132,7 @@ const getCityName = (
 
       
 
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
 
           <div className="flex items-start gap-2.5 min-w-0">
 
@@ -155,6 +155,7 @@ const getCityName = (
                   text-xl
                   font-semibold
                   text-[var(--text-dark)]
+                  truncate
                 "
               >
                 {review.title}
@@ -182,7 +183,7 @@ const getCityName = (
 
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:shrink-0">
 
           <PostStatusBadge
             moderationStatus={review.moderation_status}

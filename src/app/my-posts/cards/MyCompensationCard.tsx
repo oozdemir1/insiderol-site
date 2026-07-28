@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Ghost, Pencil } from "lucide-react";
 import IconActionButton from "@/components/ui/IconActionButton";
 import { Trash2 } from "lucide-react";
 import DeleteConfirmPopup from "@/components/ui/DeleteConfirmPopup";
@@ -173,13 +173,28 @@ useEffect(() => {
   "
 >
 
-  <div>
+  <div className="flex items-start gap-2.5 min-w-0">
+
+    <div className="w-9 h-9 rounded-full bg-[var(--surface-2)] flex items-center justify-center shrink-0 overflow-hidden">
+      {!compensation.is_anonymous && compensation.authorAvatarUrl ? (
+        <img
+          src={compensation.authorAvatarUrl}
+          alt=""
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <Ghost size={16} className="text-[var(--accent)]" />
+      )}
+    </div>
+
+    <div className="min-w-0">
 
     <h2
       className="
         text-xl
         font-semibold
         text-[var(--text-dark)]
+        truncate
       "
     >
       {compensation.companies?.name}
@@ -189,11 +204,19 @@ useEffect(() => {
       className="
         text-sm
         text-[var(--muted-dark)]
-        mb-3
+        mt-1
       "
     >
       {compensation.roles?.name}
     </p>
+
+    <p className="text-xs text-[var(--muted-dark)] mt-0.5 mb-3">
+      {!compensation.is_anonymous && compensation.authorUsername
+        ? `@${compensation.authorUsername}`
+        : "anonim"}
+    </p>
+
+    </div>
 
   </div>
 
@@ -204,28 +227,6 @@ useEffect(() => {
     roleStatus={compensation.role_status}
     companyStatus={compensation.company_status}
   />
-
-  <div
-  className="
-    shrink-0
-
-    rounded-md
-
-    bg-black/5
-
-    px-2.5
-    py-1.5
-
-    text-xs
-    font-medium
-
-    text-[var(--muted-dark)]
-  "
->
-  {compensation.is_anonymous
-    ? "Anonim"
-    : "Kullanıcı adı"}
-</div>
 
   <div
   className="
