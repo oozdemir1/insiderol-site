@@ -159,8 +159,13 @@ button {
   /* dvh accounts for mobile browser chrome (address bar, etc.) showing
      or hiding — 100vh alone can be taller than what's actually visible,
      leaving the next section's light background peeking in below the
-     fold before any scroll happens. */
-  min-height: 100dvh;
+     fold before any scroll happens.
+     Subtracting the navbar's own height (h-20 = 5rem) matters here: the
+     sticky navbar sits above this section in normal flow, so without
+     the subtraction, this section's own vertical center sits one navbar-
+     height below the actual visible-area center, reading as content
+     pushed down. */
+  min-height: calc(100dvh - 5rem);
 
   display: flex;
   align-items: center;
@@ -197,6 +202,7 @@ button {
    still wanted on both, just without the shift on mobile. */
 @media (min-width: 768px) {
   .hero-section {
+    min-height: 100dvh;
     padding-block: 0;
   }
 
