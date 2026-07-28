@@ -75,8 +75,14 @@ body {
      CompanyTabsNav's border) are deliberately wider than the visible
      viewport since 100vw includes the scrollbar gutter - clip that
      intentional overflow here instead of letting it create a real
-     horizontal scrollbar on the whole page. */
-  overflow-x: hidden;
+     horizontal scrollbar on the whole page.
+     Using `clip` rather than `hidden` matters: overflow-x:hidden with
+     overflow-y left unspecified forces the y-axis to behave like auto
+     too, turning body into a scroll container — which breaks
+     position:sticky on children (like the navbar) since their sticky
+     offset then resolves against body instead of the real viewport.
+     `clip` clips the same way without creating that scroll container. */
+  overflow-x: clip;
 }
 
 
