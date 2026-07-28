@@ -1178,6 +1178,8 @@ if (mode === "edit") {
                   }
                   onConfirm={() => {
 
+                    setShowExitConfirm(false);
+
                     localStorage.removeItem(
                       draftKey
                     );
@@ -1206,7 +1208,7 @@ if (mode === "edit") {
                     } else if (mode === "edit") {
                       router.push("/my-posts?tab=Maaş");
                     } else {
-                      router.push("/");
+                      router.push("/share?tab=Maaş");
                     }
                   }}
                 />

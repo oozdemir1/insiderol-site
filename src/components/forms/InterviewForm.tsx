@@ -1396,7 +1396,10 @@ setSubmitted(true);
       {/* Experience */}
       <div>
         <label className="form-label block mb-2">
-          Deneyimini paylaş
+          Deneyimini paylaş{" "}
+          <span className="font-normal text-[11px] text-[var(--muted-dark)]">
+            (en az 20 karakter)
+          </span>
         </label>
 
         <textarea
@@ -1475,7 +1478,9 @@ setSubmitted(true);
                 setShowExitConfirm(false)
               }
               onConfirm={() => {
-                
+
+                 setShowExitConfirm(false);
+
                  localStorage.removeItem(
                   draftKey
                 );
@@ -1501,7 +1506,7 @@ setSubmitted(true);
                 } else if (mode === "edit") {
                   router.push("/my-posts?tab=Mülakat Süreci");
                 } else {
-                  router.push("/");
+                  router.push("/share?tab=Mülakat Süreci");
                 }
               }}
             />

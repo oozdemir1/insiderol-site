@@ -1119,6 +1119,8 @@ setSubmitted(true);
               }
               
               onConfirm={() => {
+               setShowExitConfirm(false);
+
                localStorage.removeItem(
                 draftKey
               );
@@ -1144,7 +1146,7 @@ setSubmitted(true);
                 } else if (mode === "edit") {
                   router.push("/my-posts?tab=Yan Hak");
                 } else {
-                  router.push("/");
+                  router.push("/share?tab=Yan Hak");
                 }
               }}
             />

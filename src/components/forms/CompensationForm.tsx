@@ -1213,6 +1213,8 @@ return (
               }
               onConfirm={() => {
 
+                setShowExitConfirm(false);
+
                 localStorage.removeItem(
                   draftKey
                 );
@@ -1238,7 +1240,7 @@ return (
                 } else if (mode === "edit") {
                   router.push("/my-posts?tab=Ücret Politikası");
                 } else {
-                  router.push("/");
+                  router.push("/share?tab=Ücret Politikası");
                 }
               }}
             />

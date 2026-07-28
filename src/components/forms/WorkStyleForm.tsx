@@ -1070,6 +1070,8 @@ setSubmitted(true);
               }
               onConfirm={() => {
 
+               setShowExitConfirm(false);
+
                localStorage.removeItem(
                 draftKey
               );
@@ -1095,7 +1097,7 @@ setSubmitted(true);
                 } else if (mode === "edit") {
                   router.push("/my-posts?tab=Çalışma Biçimi");
                 } else {
-                  router.push("/");
+                  router.push("/share?tab=Çalışma Biçimi");
                 }
               }}
             />
