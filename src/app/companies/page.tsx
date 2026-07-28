@@ -6,6 +6,7 @@ import SortDropdown from "./SortDropdown";
 import CityFilter from "./CityFilter";
 import IndustryTypeahead from "./IndustryTypeahead";
 import RatingFilter from "./RatingFilter";
+import FiltersToggle from "./FiltersToggle";
 import { normalizeSearchText } from "../constants/normalizationUtils";
 import Pagination from "@/components/Pagination";
 
@@ -194,9 +195,8 @@ export default async function CompaniesPage({
 <div className="container mx-auto px-4 max-w-7xl">
 <form className="w-full">
 
-<div className="flex items-center gap-2">
-<div className="grid grid-cols-[220px_220px_140px_140px_auto_auto] gap-2">
-<div className="relative">
+<div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-2">
+<div className="relative xl:w-[220px] xl:shrink-0">
   <input
     type="text"
     name="q"
@@ -221,7 +221,9 @@ export default async function CompaniesPage({
 
 </div>
 
+<FiltersToggle activeCount={[industryFilter, hqCityFilter, averageRatingFilter].filter(Boolean).length}>
 
+<div className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-[140px_140px_140px] gap-2">
 
 <IndustryTypeahead defaultValue={industry || ""} />
 
@@ -229,24 +231,29 @@ export default async function CompaniesPage({
 
 <RatingFilter defaultValue={averageRating || ""} />
 
+</div>
+
+<div className="flex gap-2">
 <button
   type="submit"
-  className="form-btn  "
+  className="form-btn flex-1 xl:w-auto xl:flex-none"
 >
   Ara
 </button>
 
 <a
   href="/companies"
-  className="form-btn form-btn-secondary"
+  className="form-btn form-btn-secondary flex-1 xl:w-auto xl:flex-none"
 >
   Temizle
 </a>
 </div>
 
-<div className="h-8 w-px bg-black/20" />
+<div className="hidden xl:block h-8 w-px bg-black/20" />
 
 <SortDropdown sort={sort || ""} />
+
+</FiltersToggle>
 
 </div>
 

@@ -61,11 +61,11 @@ export default function SortDropdown({
   };
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative w-full xl:w-auto">
       <button
         type="button"
         onClick={() => setShowDropdown((prev) => !prev)}
-        className="form-field !w-[200px] flex items-center justify-between gap-2"
+        className="form-field w-full xl:!w-[200px] flex items-center justify-between gap-2"
       >
         <span className={`truncate ${sort ? "" : "text-[var(--muted-dark)]"}`}>
           {selectedLabel}
@@ -98,7 +98,7 @@ export default function SortDropdown({
             left-0
             z-50
             mt-1
-            w-[200px]
+            w-full xl:w-[200px]
 
             max-h-64
             overflow-y-auto

@@ -91,7 +91,7 @@ export default function Navbar({
     <nav className="sticky top-0 w-full bg-[var(--surface)] backdrop-blur-xl text-[var(--foreground)] z-50">
       <div className="max-w-7xl mx-auto h-20 px-8 rounded-2xl border border-white/10 bg-[var(--surface)] shadow-2xl shadow-black/20 flex items-center justify-between">
 
-       <div className="flex items-center justify-between w-full md:w-auto">
+       <div className="flex items-center justify-between w-full xl:w-auto">
 
           {/* LOGO */}
        <div className="flex flex-col leading-none">
@@ -113,7 +113,7 @@ export default function Navbar({
 
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-white transition-all duration-200"
+            className="xl:hidden text-white transition-all duration-200"
           >
 
               {mobileMenuOpen ? (
@@ -156,7 +156,7 @@ export default function Navbar({
 
         </div>
         {/* RIGHT SIDE */}
-        <div className="hidden md:flex items-center gap-5">
+        <div className="hidden xl:flex items-center gap-5">
 
           
           {/* NAV LINKS */}
@@ -328,7 +328,7 @@ export default function Navbar({
 
       {mobileMenuOpen && (
 
-              <div className="md:hidden mt-3 rounded-2xl border border-white/10 bg-[var(--surface)] shadow-2xl shadow-black/20 p-5 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="xl:hidden mt-3 rounded-2xl border border-white/10 bg-[var(--surface)] shadow-2xl shadow-black/20 p-5 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
 
                 <a
                   href="/share"
