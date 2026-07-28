@@ -89,7 +89,7 @@ export default function Navbar({
 
   return (
     <nav className="sticky top-0 w-full bg-[var(--surface)] backdrop-blur-xl text-[var(--foreground)] z-50">
-      <div className="max-w-7xl mx-auto h-20 px-8 rounded-2xl border border-white/10 bg-[var(--surface)] shadow-2xl shadow-black/20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto h-16 md:h-20 px-8 rounded-2xl border border-white/10 bg-[var(--surface)] shadow-2xl shadow-black/20 flex items-center justify-between">
 
        <div className="flex items-center justify-between w-full xl:w-auto">
 

@@ -93,7 +93,7 @@ export default function Hero() {
       </h3>
 
       <p className="hero-cta-description">
-        Şirketleri incele ve karşılaştır.
+        Şirket profillerini, maaş ve yorumları incele.
       </p>
     </div>
   </Link>
@@ -114,7 +114,7 @@ export default function Hero() {
       </h3>
 
       <p className="hero-cta-description">
-        Pozisyon maaşlarını ve yorumlarını incele.
+        Pozisyona göre şirket ve maaşları karşılaştır.
       </p>
     </div>
   </Link>
@@ -135,7 +135,7 @@ export default function Hero() {
       </h3>
 
       <p className="hero-cta-description">
-          Maaşları ve şirket verilerini filtrele.
+          Maaşları filtrele, şirketleri karşılaştır.
           </p>
     </div>
   </Link>
