@@ -502,7 +502,7 @@ export default function RolePageClient({
                   ⭐{averageRating}
                 </p>
                 <p className="w-full truncate text-center text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
-                  Ortalama Puan · {totalReviews} değerlendirme
+                  {totalReviews} Yorum
                 </p>
               </div>
 
@@ -513,7 +513,7 @@ export default function RolePageClient({
                     : "-"}
                 </div>
                 <p className="w-full truncate text-center text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
-                  Ortalama Maaş · {totalSalaries} paylaşım
+                  {totalSalaries} Paylaşım
                 </p>
               </div>
             </div>

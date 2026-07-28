@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
 
 type CompanyHeaderCardProps = {
@@ -29,6 +29,15 @@ export default function CompanyHeaderCard({
   industryName,
 }: CompanyHeaderCardProps) {
   const [expanded, setExpanded] = useState(true);
+
+  // Starts expanded on the server (matches desktop) then collapses on mount
+  // if we're on mobile, to avoid a hydration mismatch from checking
+  // window width during initial render.
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      setExpanded(false);
+    }
+  }, []);
 
   return (
     <div className="card-light rounded-2xl p-3 md:p-5">
@@ -72,13 +81,13 @@ export default function CompanyHeaderCard({
 
           {/* Stats Cards */}
           <div className="flex-1 flex flex-col md:items-start items-center gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+            <div className="grid grid-cols-3 gap-3 md:gap-6 w-full">
               <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
                 <p className="text-[var(--text-dark)] text-[20px] font-semibold tracking-tight leading-none">
                   ⭐{averageReviewRating}
                 </p>
                 <p className="w-full truncate text-center text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
-                  Ortalama Puan · {reviewCount} değerlendirme
+                  {reviewCount} Yorum
                 </p>
               </div>
 
@@ -89,7 +98,7 @@ export default function CompanyHeaderCard({
                     : "-"}
                 </div>
                 <p className="w-full truncate text-center text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
-                  Ortalama Maaş · {salaryCount} paylaşım
+                  {salaryCount} Paylaşım
                 </p>
               </div>
 
