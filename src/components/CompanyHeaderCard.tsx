@@ -44,12 +44,12 @@ export default function CompanyHeaderCard({
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
-        className="w-full flex items-center justify-center gap-2 text-center"
+        className="w-full flex items-center justify-center gap-1 md:gap-2 text-center"
       >
         {expanded ? (
-          <ChevronUp size={18} className="text-[var(--muted-dark)] shrink-0" />
+          <ChevronUp className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
         ) : (
-          <ChevronDown size={18} className="text-[var(--muted-dark)] shrink-0" />
+          <ChevronDown className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
         )}
 
         <span className="text-2xl text-[var(--text-dark)]">
@@ -60,9 +60,9 @@ export default function CompanyHeaderCard({
         </span>
 
         {expanded ? (
-          <ChevronUp size={18} className="text-[var(--muted-dark)] shrink-0" />
+          <ChevronUp className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
         ) : (
-          <ChevronDown size={18} className="text-[var(--muted-dark)] shrink-0" />
+          <ChevronDown className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
         )}
       </button>
 
