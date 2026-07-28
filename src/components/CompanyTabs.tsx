@@ -789,9 +789,9 @@ const isAnyFormOpen =
                   ) : (
                     <>
                      {salaries?.length > 0 && (
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
+                      <div className="flex flex-col xl:flex-row xl:items-center gap-2 mb-4">
                         <FiltersToggle breakpoint="sm">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:flex-1">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 xl:flex-1">
                           {salaryRoleFilterApplicable && (
                             <SelectDropdown
                               value={selectedRoleId}
@@ -835,7 +835,7 @@ const isAnyFormOpen =
 
                         {!isAnyFormOpen && (
                           <button
-                            className={`company-cta-btn ${currentCTA.color} text-white/90 w-full sm:w-auto shrink-0`}
+                            className={`company-cta-btn ${currentCTA.color} text-white/90 w-full xl:w-auto shrink-0`}
                             onClick={() => setShowSalaryForm(true)}
                           >
                             {currentCTA.label}
@@ -952,9 +952,9 @@ const isAnyFormOpen =
                 {/* Sort + Filter */}
 
                 {processedReviews.length > 0 && (
-                <div className="flex flex-col sm:flex-row sm:items-start gap-2">
+                <div className="flex flex-col xl:flex-row xl:items-center gap-2">
                 <FiltersToggle breakpoint="sm">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:flex-1">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 xl:flex-1">
                 {/* Sort dropdown */}
                 <SelectDropdown
                     value={reviewSort}
@@ -1041,7 +1041,7 @@ const isAnyFormOpen =
 
                 {!isAnyFormOpen && (
                   <button
-                    className={`company-cta-btn ${currentCTA.color} text-white/90 w-full sm:w-auto shrink-0`}
+                    className={`company-cta-btn ${currentCTA.color} text-white/90 w-full xl:w-auto shrink-0`}
                     onClick={() => currentSetActiveTab("Yorum Ekle")}
                   >
                     {currentCTA.label}

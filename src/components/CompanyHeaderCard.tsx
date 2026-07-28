@@ -44,12 +44,12 @@ export default function CompanyHeaderCard({
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
-        className="w-full flex items-center justify-center gap-1.5 md:gap-2 text-center"
+        className="w-full flex items-center justify-center gap-1.5 md:gap-2 text-center xl:pointer-events-none xl:cursor-default"
       >
         {expanded ? (
-          <ChevronUp className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
+          <ChevronUp className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0 xl:hidden" />
         ) : (
-          <ChevronDown className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
+          <ChevronDown className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0 xl:hidden" />
         )}
 
         <span className="text-xl md:text-2xl text-[var(--text-dark)]">
@@ -60,14 +60,15 @@ export default function CompanyHeaderCard({
         </span>
 
         {expanded ? (
-          <ChevronUp className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
+          <ChevronUp className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0 xl:hidden" />
         ) : (
-          <ChevronDown className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
+          <ChevronDown className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0 xl:hidden" />
         )}
       </button>
 
-      {expanded && (
-        <div className="flex flex-col md:flex-row md:items-center md:gap-8 md:h-[104px] mt-4">
+      <div
+        className={`${expanded ? "flex" : "hidden"} xl:flex flex-col md:flex-row md:items-center md:gap-8 md:h-[104px] mt-4`}
+      >
           {/* Logo */}
           <div className="flex-shrink-0 self-center text-center md:text-left relative mb-6 md:mb-0">
             {logoContent}
@@ -113,7 +114,6 @@ export default function CompanyHeaderCard({
             </div>
           </div>
         </div>
-      )}
     </div>
   );
 }

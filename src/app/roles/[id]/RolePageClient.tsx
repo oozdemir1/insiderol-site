@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Briefcase } from "lucide-react";
+import { Briefcase, ChevronDown, ChevronUp } from "lucide-react";
 import { turkishCities } from "@/app/constants/turkishCities";
 import { REMOTE_POLICY_LABELS } from "@/app/constants/companyPolicyLabels";
 import { getExperienceYearsLabel } from "@/app/constants/lookupHelpers";
@@ -75,6 +75,18 @@ export default function RolePageClient({
   const [selectedCity, setSelectedCity] = useState<number | null>(null);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("az");
+
+  const [bannerExpanded, setBannerExpanded] = useState(true);
+
+  // Starts expanded on the server (matches desktop) then collapses on mount
+  // if we're on mobile, to avoid a hydration mismatch from checking
+  // window width during initial render — same approach as the company
+  // page's CompanyHeaderCard.
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      setBannerExpanded(false);
+    }
+  }, []);
 
   // Only one breakdown list is visible at a time, so one page counter
   // covers all three (company/city/workstyle) — reset whenever a filter
@@ -454,18 +466,35 @@ export default function RolePageClient({
   return (
     <>
       <div className="card-light rounded-2xl p-3 md:p-5 mt-6">
-        <div className="text-center text-2xl text-[var(--text-dark)] mb-4">
-          <span className="font-medium text-[var(--text-dark)]">
-            {roleName}
+        <button
+          type="button"
+          onClick={() => setBannerExpanded((prev) => !prev)}
+          className="w-full flex items-center justify-center gap-1.5 md:gap-2 text-center mb-4 xl:pointer-events-none xl:cursor-default"
+        >
+          {bannerExpanded ? (
+            <ChevronUp className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0 xl:hidden" />
+          ) : (
+            <ChevronDown className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0 xl:hidden" />
+          )}
+
+          <span className="text-xl md:text-2xl text-[var(--text-dark)]">
+            <span className="font-medium text-[var(--text-dark)]">
+              {roleName}
+            </span>
+
+            <span className="ml-1.5 text-[var(--muted-dark)]">
+              Şirket Karşılaştırması
+            </span>
           </span>
 
-          <span className="ml-1.5 text-[var(--muted-dark)]">
-        
-            Şirket Karşılaştırması
-          </span>
-        </div>
+          {bannerExpanded ? (
+            <ChevronUp className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0 xl:hidden" />
+          ) : (
+            <ChevronDown className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0 xl:hidden" />
+          )}
+        </button>
 
-        <div className="flex flex-col md:flex-row md:items-center md:gap-8 md:h-[104px]">
+        <div className={`${bannerExpanded ? "flex" : "hidden"} xl:flex flex-col md:flex-row md:items-center md:gap-8 md:h-[104px]`}>
           {/* Logo — roles have no uploaded image (unlike companies), so a
               generic icon fills the same slot instead of a real logo. */}
           <div className="flex-shrink-0 self-center mb-6 md:mb-0">
@@ -489,30 +518,30 @@ export default function RolePageClient({
           <div className="flex-1 flex flex-col md:items-start items-center gap-4">
             <div className="grid grid-cols-3 gap-3 md:gap-6 w-full">
               <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
-                <div className="text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
+                <div className="text-[16px] md:text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
                   {companyBreakdown.length}
                 </div>
-                <p className="w-full truncate text-center text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
+                <p className="w-full truncate text-center text-[9px] md:text-[10px] tracking-[0.1em] md:tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
                   Şirket
                 </p>
               </div>
 
               <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
-                <p className="text-[var(--text-dark)] text-[20px] font-semibold tracking-tight leading-none">
+                <p className="text-[var(--text-dark)] text-[16px] md:text-[20px] font-semibold tracking-tight leading-none">
                   ⭐{averageRating}
                 </p>
-                <p className="w-full truncate text-center text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
+                <p className="w-full truncate text-center text-[9px] md:text-[10px] tracking-[0.1em] md:tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
                   {totalReviews} Yorum
                 </p>
               </div>
 
               <div className="card-light card-compact flex flex-col items-center justify-center gap-1">
-                <div className="text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
+                <div className="text-[16px] md:text-[20px] font-semibold tracking-tight leading-none text-[var(--text-dark)]">
                   {averageSalary > 0
                     ? `${averageSalary.toLocaleString("tr-TR")}₺`
                     : "-"}
                 </div>
-                <p className="w-full truncate text-center text-[10px] tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
+                <p className="w-full truncate text-center text-[9px] md:text-[10px] tracking-[0.1em] md:tracking-[0.14em] text-[var(--muted-dark)]/80 mt-2">
                   {totalSalaries} Paylaşım
                 </p>
               </div>
@@ -522,7 +551,7 @@ export default function RolePageClient({
       </div>
 
       <div className="mt-6">
-      <FiltersToggle breakpoint="sm">
+      <FiltersToggle breakpoint="md">
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
         <SelectDropdown
           value={selectedExperience}
@@ -588,8 +617,8 @@ export default function RolePageClient({
                   key={policyStat.policyId}
                   className="card-light rounded-[1rem] p-4 md:p-5 flex items-center gap-4"
                 >
-                  <div className="flex-1">
-                    <h3 className="text-md font-semibold text-[var(--text-dark)]">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-md font-semibold text-[var(--text-dark)] truncate">
                       {policyStat.label}
                     </h3>
 
@@ -619,8 +648,8 @@ export default function RolePageClient({
                   key={cityStat.cityId}
                   className="card-light rounded-[1rem] p-4 md:p-5 flex items-center gap-4"
                 >
-                  <div className="flex-1">
-                    <h3 className="text-md font-semibold text-[var(--text-dark)]">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-md font-semibold text-[var(--text-dark)] truncate">
                       {cityStat.name}
                     </h3>
 
@@ -683,8 +712,8 @@ export default function RolePageClient({
                   )}
                 </div>
 
-                <div className="flex-1">
-                  <h3 className="text-md font-semibold text-[var(--text-dark)]">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-md font-semibold text-[var(--text-dark)] truncate">
                     {company.name}
                   </h3>
 
