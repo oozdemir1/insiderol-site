@@ -193,12 +193,10 @@ export default async function RolesPage({
       >
         <div className="container mx-auto px-4 max-w-7xl">
 
-          <div className="flex items-center justify-center gap-2">
-            <div className="grid grid-cols-[320px_auto_auto] gap-2">
-              <RoleSearchBar initialQuery={q || ""} />
-            </div>
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-center gap-2">
+            <RoleSearchBar initialQuery={q || ""} />
 
-            <div className="h-8 w-px bg-black/20" />
+            <div className="hidden md:block h-8 w-px bg-black/20" />
 
             <SortDropdown sort={sort || ""} />
           </div>

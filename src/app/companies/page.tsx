@@ -6,7 +6,7 @@ import SortDropdown from "./SortDropdown";
 import CityFilter from "./CityFilter";
 import IndustryTypeahead from "./IndustryTypeahead";
 import RatingFilter from "./RatingFilter";
-import FiltersToggle from "./FiltersToggle";
+import FiltersToggle from "@/components/FiltersToggle";
 import { normalizeSearchText } from "../constants/normalizationUtils";
 import Pagination from "@/components/Pagination";
 
@@ -214,9 +214,13 @@ export default async function CompaniesPage({
     ✕
   </a>
 ) : (
-<span className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40">
+<button
+  type="submit"
+  aria-label="Ara"
+  className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 hover:text-black/70"
+>
   <Search size={18} />
-</span>
+</button>
 )}
 
 </div>

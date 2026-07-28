@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/lib/supabase";
+import FiltersToggle from "@/components/FiltersToggle";
 import SalaryCard from "@/components/SalaryCard";
 import WorkStyleCard from "@/components/WorkStyleCard";
 import BenefitsCard from "@/components/BenefitsCard";
@@ -788,7 +789,9 @@ const isAnyFormOpen =
                   ) : (
                     <>
                      {salaries?.length > 0 && (
-                      <div className="grid grid-cols-4 gap-2 mb-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
+                        <FiltersToggle breakpoint="sm">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:flex-1">
                           {salaryRoleFilterApplicable && (
                             <SelectDropdown
                               value={selectedRoleId}
@@ -827,17 +830,17 @@ const isAnyFormOpen =
                               className="w-full"
                             />
                           )}
-
-                        <div className="col-start-4 flex items-center justify-end">
-                          {!isAnyFormOpen && (
-                            <button
-                              className={`company-cta-btn ${currentCTA.color} text-white/90`}
-                              onClick={() => setShowSalaryForm(true)}
-                            >
-                              {currentCTA.label}
-                            </button>
-                          )}
                         </div>
+                        </FiltersToggle>
+
+                        {!isAnyFormOpen && (
+                          <button
+                            className={`company-cta-btn ${currentCTA.color} text-white/90 w-full sm:w-auto shrink-0`}
+                            onClick={() => setShowSalaryForm(true)}
+                          >
+                            {currentCTA.label}
+                          </button>
+                        )}
                       </div>
                     )}
 
@@ -949,7 +952,9 @@ const isAnyFormOpen =
                 {/* Sort + Filter */}
 
                 {processedReviews.length > 0 && (
-                <div className="grid grid-cols-4 gap-2 mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-2 mb-4">
+                <FiltersToggle breakpoint="sm">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:flex-1">
                 {/* Sort dropdown */}
                 <SelectDropdown
                     value={reviewSort}
@@ -992,18 +997,6 @@ const isAnyFormOpen =
                   />
                 )}
 
-                {/* CTA — 4th column, spans both rows */}
-                <div className="col-start-4 row-start-1 row-span-2 flex items-center justify-end">
-                  {!isAnyFormOpen && (
-                    <button
-                      className={`company-cta-btn ${currentCTA.color} text-white/90`}
-                      onClick={() => currentSetActiveTab("Yorum Ekle")}
-                    >
-                      {currentCTA.label}
-                    </button>
-                  )}
-                </div>
-
                 {reviewExperienceFilterApplicable && (
                   <SelectDropdown
                     value={selectedExperience}
@@ -1041,6 +1034,18 @@ const isAnyFormOpen =
                     placeholder="Tavsiye Durumu"
                     className="w-full"
                   />
+                )}
+
+                </div>
+                </FiltersToggle>
+
+                {!isAnyFormOpen && (
+                  <button
+                    className={`company-cta-btn ${currentCTA.color} text-white/90 w-full sm:w-auto shrink-0`}
+                    onClick={() => currentSetActiveTab("Yorum Ekle")}
+                  >
+                    {currentCTA.label}
+                  </button>
                 )}
                 </div>
                 )}
@@ -1086,43 +1091,45 @@ const isAnyFormOpen =
             ) : (
               <>
                 {workStyles.length > 0 && (
-                  <div className="grid grid-cols-4 gap-2 mb-4">
-                    {workStyleRoleFilterApplicable && (
-                      <SelectDropdown
-                        value={selectedRoleId}
-                        onChange={(value) => {
-                          setSelectedRoleId(value);
-                          setWorkStylesPage(1);
-                        }}
-                        options={workStyleRoleOptions}
-                        placeholder="Tüm Pozisyonlar"
-                        className="w-full"
-                      />
-                    )}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
+                    <FiltersToggle breakpoint="sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:flex-1">
+                      {workStyleRoleFilterApplicable && (
+                        <SelectDropdown
+                          value={selectedRoleId}
+                          onChange={(value) => {
+                            setSelectedRoleId(value);
+                            setWorkStylesPage(1);
+                          }}
+                          options={workStyleRoleOptions}
+                          placeholder="Tüm Pozisyonlar"
+                          className="w-full"
+                        />
+                      )}
 
-                    {workStyleCityFilterApplicable && (
-                      <SelectDropdown
-                        value={selectedCity}
-                        onChange={(value) => {
-                          setSelectedCity(value);
-                          setWorkStylesPage(1);
-                        }}
-                        options={workStyleCityOptions}
-                        placeholder="Tüm Şehirler"
-                        className="w-full"
-                      />
-                    )}
-
-                    <div className="col-start-4 flex items-center justify-end">
-                      {!isAnyFormOpen && (
-                        <button
-                          className={`company-cta-btn ${currentCTA.color} text-white/90`}
-                          onClick={() => setShowWorkStyleForm(true)}
-                        >
-                          {currentCTA.label}
-                        </button>
+                      {workStyleCityFilterApplicable && (
+                        <SelectDropdown
+                          value={selectedCity}
+                          onChange={(value) => {
+                            setSelectedCity(value);
+                            setWorkStylesPage(1);
+                          }}
+                          options={workStyleCityOptions}
+                          placeholder="Tüm Şehirler"
+                          className="w-full"
+                        />
                       )}
                     </div>
+                    </FiltersToggle>
+
+                    {!isAnyFormOpen && (
+                      <button
+                        className={`company-cta-btn ${currentCTA.color} text-white/90 w-full sm:w-auto shrink-0`}
+                        onClick={() => setShowWorkStyleForm(true)}
+                      >
+                        {currentCTA.label}
+                      </button>
+                    )}
                   </div>
                 )}
 
@@ -1190,43 +1197,45 @@ const isAnyFormOpen =
             ) : (
               <>
                 {benefits.length > 0 && (
-                  <div className="grid grid-cols-4 gap-2 mb-4">
-                    {benefitsRoleFilterApplicable && (
-                      <SelectDropdown
-                        value={selectedRoleId}
-                        onChange={(value) => {
-                          setSelectedRoleId(value);
-                          setBenefitsPage(1);
-                        }}
-                        options={benefitsRoleOptions}
-                        placeholder="Tüm Pozisyonlar"
-                        className="w-full"
-                      />
-                    )}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
+                    <FiltersToggle breakpoint="sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:flex-1">
+                      {benefitsRoleFilterApplicable && (
+                        <SelectDropdown
+                          value={selectedRoleId}
+                          onChange={(value) => {
+                            setSelectedRoleId(value);
+                            setBenefitsPage(1);
+                          }}
+                          options={benefitsRoleOptions}
+                          placeholder="Tüm Pozisyonlar"
+                          className="w-full"
+                        />
+                      )}
 
-                    {benefitsCityFilterApplicable && (
-                      <SelectDropdown
-                        value={selectedCity}
-                        onChange={(value) => {
-                          setSelectedCity(value);
-                          setBenefitsPage(1);
-                        }}
-                        options={benefitsCityOptions}
-                        placeholder="Tüm Şehirler"
-                        className="w-full"
-                      />
-                    )}
-
-                    <div className="col-start-4 flex items-center justify-end">
-                      {!isAnyFormOpen && (
-                        <button
-                          className={`company-cta-btn ${currentCTA.color} text-white/90`}
-                          onClick={() => setShowBenefitsForm(true)}
-                        >
-                          {currentCTA.label}
-                        </button>
+                      {benefitsCityFilterApplicable && (
+                        <SelectDropdown
+                          value={selectedCity}
+                          onChange={(value) => {
+                            setSelectedCity(value);
+                            setBenefitsPage(1);
+                          }}
+                          options={benefitsCityOptions}
+                          placeholder="Tüm Şehirler"
+                          className="w-full"
+                        />
                       )}
                     </div>
+                    </FiltersToggle>
+
+                    {!isAnyFormOpen && (
+                      <button
+                        className={`company-cta-btn ${currentCTA.color} text-white/90 w-full sm:w-auto shrink-0`}
+                        onClick={() => setShowBenefitsForm(true)}
+                      >
+                        {currentCTA.label}
+                      </button>
+                    )}
                   </div>
                 )}
 
@@ -1298,43 +1307,45 @@ const isAnyFormOpen =
             ) : (
               <>
                 {compensations.length > 0 && (
-                  <div className="grid grid-cols-4 gap-2 mb-4">
-                    {compensationRoleFilterApplicable && (
-                      <SelectDropdown
-                        value={selectedRoleId}
-                        onChange={(value) => {
-                          setSelectedRoleId(value);
-                          setCompensationsPage(1);
-                        }}
-                        options={compensationRoleOptions}
-                        placeholder="Tüm Pozisyonlar"
-                        className="w-full"
-                      />
-                    )}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
+                    <FiltersToggle breakpoint="sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:flex-1">
+                      {compensationRoleFilterApplicable && (
+                        <SelectDropdown
+                          value={selectedRoleId}
+                          onChange={(value) => {
+                            setSelectedRoleId(value);
+                            setCompensationsPage(1);
+                          }}
+                          options={compensationRoleOptions}
+                          placeholder="Tüm Pozisyonlar"
+                          className="w-full"
+                        />
+                      )}
 
-                    {compensationCityFilterApplicable && (
-                      <SelectDropdown
-                        value={selectedCity}
-                        onChange={(value) => {
-                          setSelectedCity(value);
-                          setCompensationsPage(1);
-                        }}
-                        options={compensationCityOptions}
-                        placeholder="Tüm Şehirler"
-                        className="w-full"
-                      />
-                    )}
-
-                    <div className="col-start-4 flex items-center justify-end">
-                      {!isAnyFormOpen && (
-                        <button
-                          className={`company-cta-btn ${currentCTA.color} text-white/90`}
-                          onClick={() => setShowCompensationForm(true)}
-                        >
-                          {currentCTA.label}
-                        </button>
+                      {compensationCityFilterApplicable && (
+                        <SelectDropdown
+                          value={selectedCity}
+                          onChange={(value) => {
+                            setSelectedCity(value);
+                            setCompensationsPage(1);
+                          }}
+                          options={compensationCityOptions}
+                          placeholder="Tüm Şehirler"
+                          className="w-full"
+                        />
                       )}
                     </div>
+                    </FiltersToggle>
+
+                    {!isAnyFormOpen && (
+                      <button
+                        className={`company-cta-btn ${currentCTA.color} text-white/90 w-full sm:w-auto shrink-0`}
+                        onClick={() => setShowCompensationForm(true)}
+                      >
+                        {currentCTA.label}
+                      </button>
+                    )}
                   </div>
                 )}
 
@@ -1412,43 +1423,45 @@ const isAnyFormOpen =
             ) : (
              <>
               {interviews.length > 0 && (
-                <div className="grid grid-cols-4 gap-2 mb-4">
-                  {interviewRoleFilterApplicable && (
-                    <SelectDropdown
-                      value={selectedRoleId}
-                      onChange={(value) => {
-                        setSelectedRoleId(value);
-                        setInterviewsPage(1);
-                      }}
-                      options={interviewRoleOptions}
-                      placeholder="Tüm Pozisyonlar"
-                      className="w-full"
-                    />
-                  )}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
+                  <FiltersToggle breakpoint="sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:flex-1">
+                    {interviewRoleFilterApplicable && (
+                      <SelectDropdown
+                        value={selectedRoleId}
+                        onChange={(value) => {
+                          setSelectedRoleId(value);
+                          setInterviewsPage(1);
+                        }}
+                        options={interviewRoleOptions}
+                        placeholder="Tüm Pozisyonlar"
+                        className="w-full"
+                      />
+                    )}
 
-                  {interviewCityFilterApplicable && (
-                    <SelectDropdown
-                      value={selectedCity}
-                      onChange={(value) => {
-                        setSelectedCity(value);
-                        setInterviewsPage(1);
-                      }}
-                      options={interviewCityOptions}
-                      placeholder="Tüm Şehirler"
-                      className="w-full"
-                    />
-                  )}
+                    {interviewCityFilterApplicable && (
+                      <SelectDropdown
+                        value={selectedCity}
+                        onChange={(value) => {
+                          setSelectedCity(value);
+                          setInterviewsPage(1);
+                        }}
+                        options={interviewCityOptions}
+                        placeholder="Tüm Şehirler"
+                        className="w-full"
+                      />
+                    )}
+                  </div>
+                  </FiltersToggle>
 
-                  <div className="col-start-4 flex items-center justify-end">
                   {!isAnyFormOpen && (
                     <button
-                      className={`company-cta-btn ${currentCTA.color} text-white/90`}
+                      className={`company-cta-btn ${currentCTA.color} text-white/90 w-full sm:w-auto shrink-0`}
                       onClick={() => setShowInterviewForm(true)}
                     >
                       {currentCTA.label}
                     </button>
                   )}
-                  </div>
                 </div>
               )}
 
