@@ -31,12 +31,13 @@ export async function DELETE(
     );
   }
 
-  const { error } =
+  const { data, error } =
     await supabase
       .from("company_benefits")
       .delete()
       .eq("id", id)
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .select();
 
   if (error) {
     console.error(
@@ -51,6 +52,16 @@ export async function DELETE(
       {
         status: 500,
       }
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return NextResponse.json(
+      {
+        error:
+          "Silme işlemi başarısız (0 satır etkilendi, muhtemelen RLS engelledi)",
+      },
+      { status: 403 }
     );
   }
 
