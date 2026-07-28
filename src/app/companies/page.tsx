@@ -2,6 +2,7 @@ import { createClient } from "@/lib/server";
 import { Search } from "lucide-react";
 import type { Metadata } from "next";
 import CompaniesList from "./CompaniesList";
+import CompanySearchInput from "./CompanySearchInput";
 import SortDropdown from "./SortDropdown";
 import CityFilter from "./CityFilter";
 import IndustryTypeahead from "./IndustryTypeahead";
@@ -197,14 +198,7 @@ export default async function CompaniesPage({
 
 <div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-2">
 <div className="relative xl:w-[220px] xl:shrink-0">
-  <input
-    type="text"
-    name="q"
-    placeholder="Şirket ara..."
-    defaultValue={q || ""}
-    className="form-field w-full text-lg h-10 pr-10"
-  />
-
+  <CompanySearchInput defaultValue={q || ""} />
 
 {q ? (
   <a

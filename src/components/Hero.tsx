@@ -51,7 +51,7 @@ export default function Hero() {
         {/* CTA */}
         <div className="hero-actions">
 
-         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4 mt-5">
+         <div className="grid gap-5 grid-cols-2 xl:grid-cols-4 mt-5">
 
   {/* Paylaş */}
   <Link
