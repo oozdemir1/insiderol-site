@@ -8,6 +8,7 @@ import { REMOTE_POLICY_LABELS } from "@/app/constants/companyPolicyLabels";
 import { getExperienceYearsLabel } from "@/app/constants/lookupHelpers";
 import SelectDropdown from "@/components/forms/SelectDropdown";
 import LoadMoreButton from "@/components/ui/LoadMoreButton";
+import FiltersToggle from "@/components/FiltersToggle";
 
 type SalaryRow = {
   id: number;
@@ -520,7 +521,9 @@ export default function RolePageClient({
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-2 mt-6">
+      <div className="mt-6">
+      <FiltersToggle breakpoint="sm">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
         <SelectDropdown
           value={selectedExperience}
           onChange={(value) => {
@@ -561,6 +564,8 @@ export default function RolePageClient({
           placeholder="Sırala"
           defaultValue="az"
         />
+      </div>
+      </FiltersToggle>
       </div>
 
       {selectedYear && (

@@ -952,7 +952,7 @@ const isAnyFormOpen =
                 {/* Sort + Filter */}
 
                 {processedReviews.length > 0 && (
-                <div className="flex flex-col sm:flex-row sm:items-start gap-2 mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-2">
                 <FiltersToggle breakpoint="sm">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:flex-1">
                 {/* Sort dropdown */}

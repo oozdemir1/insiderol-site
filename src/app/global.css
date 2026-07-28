@@ -70,6 +70,13 @@ body {
 
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+
+  /* Full-bleed decorative elements (w-screen + -translate-x-1/2, e.g.
+     CompanyTabsNav's border) are deliberately wider than the visible
+     viewport since 100vw includes the scrollbar gutter - clip that
+     intentional overflow here instead of letting it create a real
+     horizontal scrollbar on the whole page. */
+  overflow-x: hidden;
 }
 
 
