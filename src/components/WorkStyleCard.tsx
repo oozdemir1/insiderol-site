@@ -44,7 +44,7 @@ export default function WorkStyleCard({
   return (
     <div className="card-light rounded-2xl p-5">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2.5">
+        <div className="flex items-start gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-full bg-[var(--surface-2)] flex items-center justify-center shrink-0 overflow-hidden">
             {!isAnonymous && authorAvatarUrl ? (
               <img
@@ -57,8 +57,8 @@ export default function WorkStyleCard({
             )}
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold text-[var(--text-dark)]">
+          <div className="min-w-0">
+            <h3 className="text-lg font-semibold text-[var(--text-dark)] truncate">
               {role}
             </h3>
 

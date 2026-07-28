@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, Ghost } from "lucide-react";
+import { Ghost } from "lucide-react";
 import { formatRelativeTime } from "@/app/constants/formatRelativeTime";
 import {
   getEmploymentStatusLabel,
@@ -320,17 +320,9 @@ export default function FeedCard({ item }: { item: FeedItem }) {
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
-        className="mt-2 flex items-center gap-1 text-xs font-medium text-[var(--primary)] hover:opacity-80"
+        className="mt-3 mb-2 text-sm font-medium text-[var(--primary)] hover:opacity-80"
       >
-        {expanded ? (
-          <>
-            Detayları Gizle <ChevronUp size={14} />
-          </>
-        ) : (
-          <>
-            Detayları Göster <ChevronDown size={14} />
-          </>
-        )}
+        {expanded ? "↑ Detayları Gizle" : "↓ Detayları Göster"}
       </button>
     </div>
   );

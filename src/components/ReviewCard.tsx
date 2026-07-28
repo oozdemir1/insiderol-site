@@ -27,7 +27,7 @@ export default function ReviewCard({
 
   return (
     <div className="card-light rounded-2xl p-5">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
         <div className="flex items-start gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-full bg-[var(--surface-2)] flex items-center justify-center shrink-0 overflow-hidden">
             {!review.is_anonymous && review.authorAvatarUrl ? (
@@ -59,7 +59,7 @@ export default function ReviewCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:shrink-0">
           <span className="rounded-md bg-[rgba(123,189,0,0.12)] px-2.5 py-1 text-xs font-medium text-[var(--text-dark)]">
             Genel Puan ⭐{review.overall_rating}/5
           </span>
@@ -143,7 +143,7 @@ export default function ReviewCard({
         <button
           type="button"
           onClick={() => setExpanded((prev) => !prev)}
-          className="text-xs font-medium text-[var(--accent)] hover:underline"
+          className="text-sm font-medium text-[var(--primary)] hover:opacity-80"
         >
           {expanded ? "↑ Detayları Gizle" : "↓ Detayları Göster"}
         </button>

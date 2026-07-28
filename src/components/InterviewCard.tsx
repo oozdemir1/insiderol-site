@@ -65,7 +65,7 @@ export default function InterviewCard({ interview }: InterviewCardProps) {
         </span>
       </div>
 
-      <div className="mt-3 grid grid-cols-3 gap-x-4 gap-y-1 text-sm text-[var(--muted-dark)]">
+      <div className="mt-3 grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1 text-sm text-[var(--muted-dark)]">
         <p>
           Seviye:{" "}
           <span className="text-[var(--text-dark)]">

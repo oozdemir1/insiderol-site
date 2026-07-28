@@ -45,7 +45,7 @@ export default function SalaryCard({
   return (
     <div className="card-light rounded-2xl p-5">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2.5">
+        <div className="flex items-start gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-full bg-[var(--surface-2)] flex items-center justify-center shrink-0 overflow-hidden">
             {!isAnonymous && authorAvatarUrl ? (
               <img
@@ -58,8 +58,8 @@ export default function SalaryCard({
             )}
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold text-[var(--text-dark)]">
+          <div className="min-w-0">
+            <h3 className="text-lg font-semibold text-[var(--text-dark)] truncate">
               {role}
             </h3>
 
@@ -77,7 +77,7 @@ export default function SalaryCard({
       </div>
 
       <p className="text-xl font-bold text-[var(--accent)] mt-3">
-       {salary.toLocaleString("tr-TR")}₺
+        {salary.toLocaleString("tr-TR")}₺
       </p>
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-3 text-sm text-[var(--muted-dark)]">

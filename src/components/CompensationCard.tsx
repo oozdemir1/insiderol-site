@@ -49,7 +49,7 @@ export default function CompensationCard({
   return (
     <div className="card-light rounded-2xl p-5">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2.5">
+        <div className="flex items-start gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-full bg-[var(--surface-2)] flex items-center justify-center shrink-0 overflow-hidden">
             {!isAnonymous && authorAvatarUrl ? (
               <img
@@ -62,8 +62,8 @@ export default function CompensationCard({
             )}
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold text-[var(--text-dark)]">
+          <div className="min-w-0">
+            <h3 className="text-lg font-semibold text-[var(--text-dark)] truncate">
               {role}
             </h3>
 
@@ -78,20 +78,10 @@ export default function CompensationCard({
         </span>
       </div>
 
-      <div className="grid grid-cols-3 gap-x-4 gap-y-1 mt-3 text-sm text-[var(--muted-dark)]">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1 mt-3 text-sm text-[var(--muted-dark)]">
         <p>
           Zam Sistemi:{" "}
           <span className="text-[var(--text-dark)]">{raisePolicyLabel}</span>
-        </p>
-
-        <p>
-          Zam Sıklığı:{" "}
-          <span className="text-[var(--text-dark)]">{raiseFrequencyLabel}</span>
-        </p>
-
-        <p>
-          Prim Sistemi:{" "}
-          <span className="text-[var(--text-dark)]">{bonusPolicyLabel}</span>
         </p>
 
         <p>
@@ -100,13 +90,23 @@ export default function CompensationCard({
         </p>
 
         <p>
-          Çalışılan Şehir:{" "}
-          <span className="text-[var(--text-dark)]">{cityLabel}</span>
+          Prim Sistemi:{" "}
+          <span className="text-[var(--text-dark)]">{bonusPolicyLabel}</span>
         </p>
 
         <p>
-          Ek Finansal Destek:{" "}
+          Finansal Destek:{" "}
           <span className="text-[var(--text-dark)]">{extraSupportLabel}</span>
+        </p>
+
+        <p>
+          Zam Sıklığı:{" "}
+          <span className="text-[var(--text-dark)]">{raiseFrequencyLabel}</span>
+        </p>
+
+        <p>
+          Çalışılan Şehir:{" "}
+          <span className="text-[var(--text-dark)]">{cityLabel}</span>
         </p>
       </div>
 

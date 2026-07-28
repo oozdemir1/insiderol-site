@@ -45,7 +45,7 @@ export default function BenefitsCard({
   return (
     <div className="card-light rounded-2xl p-5">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-2.5">
+        <div className="flex items-start gap-2.5 min-w-0">
           <div className="w-8 h-8 rounded-full bg-[var(--surface-2)] flex items-center justify-center shrink-0 overflow-hidden">
             {!isAnonymous && authorAvatarUrl ? (
               <img
@@ -58,8 +58,8 @@ export default function BenefitsCard({
             )}
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold text-[var(--text-dark)]">
+          <div className="min-w-0">
+            <h3 className="text-lg font-semibold text-[var(--text-dark)] truncate">
               {role}
             </h3>
 
@@ -70,13 +70,13 @@ export default function BenefitsCard({
         </div>
 
         <span className="shrink-0 rounded-md bg-[rgba(123,189,0,0.12)] px-2.5 py-1 text-xs font-medium text-[var(--text-dark)]">
-          Özel Sağlık Sigortası: {insuranceLabel}
+          ÖSS: {insuranceLabel}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-3 text-sm text-[var(--muted-dark)]">
         <p>
-          Yemek Desteği:{" "}
+          Yemek:{" "}
           <span className="text-[var(--text-dark)]">{mealPolicyLabel}</span>
         </p>
 
@@ -86,14 +86,14 @@ export default function BenefitsCard({
         </p>
 
         <p>
-          Ulaşım Desteği:{" "}
+          Ulaşım:{" "}
           <span className="text-[var(--text-dark)]">
             {transportationPolicyLabel}
           </span>
         </p>
 
         <p>
-          Ekipman Desteği:{" "}
+          Ekipman:{" "}
           <span className="text-[var(--text-dark)]">{equipmentSupportLabel}</span>
         </p>
       </div>
