@@ -23,8 +23,12 @@ export default function Hero() {
 
 
 
-        {/* Title */}
-        <h1 className="hero-title">
+        {/* Title — visually hidden on mobile only: the navbar logo right
+            above it already says the same thing, and the repetition
+            read as redundant once the two got closer together. Stays
+            in the DOM (sr-only, not display:none) for SEO/screen
+            readers, and reappears normally from md up. */}
+        <h1 className="hero-title sr-only md:not-sr-only">
 
   <span className="text-white">
     insider
@@ -51,7 +55,7 @@ export default function Hero() {
         {/* CTA */}
         <div className="hero-actions">
 
-         <div className="grid gap-5 grid-cols-2 xl:grid-cols-4 mt-5">
+         <div className="grid gap-5 grid-cols-2 xl:grid-cols-4 mt-3 md:mt-5">
 
   {/* Paylaş */}
   <Link

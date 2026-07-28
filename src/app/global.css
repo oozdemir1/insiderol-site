@@ -254,9 +254,15 @@ button {
   justify-content: center;
   gap: 1rem;
 
-  margin-top: 3rem;
+  margin-top: 1.25rem;
 
   flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+  .hero-actions {
+    margin-top: 3rem;
+  }
 }
 
 .hero-glow {
