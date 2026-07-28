@@ -44,7 +44,7 @@ export default function CompanyHeaderCard({
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
-        className="w-full flex items-center justify-center gap-1 md:gap-2 text-center"
+        className="w-full flex items-center justify-center gap-1.5 md:gap-2 text-center"
       >
         {expanded ? (
           <ChevronUp className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
@@ -52,7 +52,7 @@ export default function CompanyHeaderCard({
           <ChevronDown className="w-3.5 h-3.5 md:w-[18px] md:h-[18px] text-[var(--muted-dark)] shrink-0" />
         )}
 
-        <span className="text-2xl text-[var(--text-dark)]">
+        <span className="text-lg md:text-2xl text-[var(--text-dark)]">
           <span className="font-medium text-[var(--text-dark)]">
             {companyName}
           </span>
