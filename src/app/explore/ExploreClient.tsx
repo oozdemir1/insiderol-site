@@ -94,9 +94,9 @@ export default function ExploreClient({
           paddingBottom: "1rem",
         }}
       >
-        <div className="container mx-auto px-4 max-w-7xl flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+        <div className="container mx-auto px-4 max-w-7xl flex flex-col items-center sm:flex-row sm:flex-wrap sm:justify-between gap-x-4 gap-y-3">
           {compareMode ? (
-            <div className="grid gap-3 grid-cols-2 md:grid-cols-4 flex-1">
+            <div className="grid gap-3 grid-cols-2 md:grid-cols-4 w-full sm:flex-1">
               {/* The role/company picker is what's actually being
                   compared — the other three just narrow it — so it leads
                   the row instead of trailing behind them. */}
@@ -198,7 +198,7 @@ export default function ExploreClient({
             // tabs) — functionally a filter, so it uses the same
             // SelectDropdown filter convention as the rest of the site
             // instead of a tab strip.
-            <div className="ml-auto w-60">
+            <div className="w-full sm:ml-auto sm:w-60">
               <SelectDropdown
                 value={typeFilter}
                 onChange={(value) =>
