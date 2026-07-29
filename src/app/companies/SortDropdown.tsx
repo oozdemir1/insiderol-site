@@ -62,6 +62,12 @@ export default function SortDropdown({
 
   return (
     <div ref={containerRef} className="relative w-full xl:w-auto">
+      {/* Mirrors CityFilter/IndustryTypeahead/RatingFilter: without this,
+          the surrounding native <form> submit (e.g. Enter in the search
+          box) rebuilds the URL from named form fields only and silently
+          drops the current sort. */}
+      <input type="hidden" name="sort" value={sort} />
+
       <button
         type="button"
         onClick={() => setShowDropdown((prev) => !prev)}

@@ -418,13 +418,17 @@ if (!user) {
           .maybeSingle();
 
         if (existingPending) {
-          await supabase
+          const { error: bumpRoleError } = await supabase
             .from("pending_roles")
             .update({
               submission_count:
                 (existingPending.submission_count ?? 0) + 1,
             })
             .eq("id", existingPending.id);
+
+          if (bumpRoleError) {
+            console.warn(bumpRoleError);
+          }
 
         } else {
 
@@ -467,13 +471,17 @@ if (isNewCompany) {
 
   if (existingPending) {
 
-    await supabase
+    const { error: bumpCompanyError } = await supabase
       .from("pending_companies")
       .update({
         submission_count:
           (existingPending.submission_count ?? 0) + 1,
       })
       .eq("id", existingPending.id);
+
+    if (bumpCompanyError) {
+      console.warn(bumpCompanyError);
+    }
 
   } else {
 
@@ -576,9 +584,19 @@ if (mode === "edit") {
     .from("company_reviews")
     .update(reviewPayload)
     .eq("id", initialData?.id)
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .select();
 
   error = response.error;
+
+  // RLS can silently match 0 rows instead of erroring — without this,
+  // the user sees "saved" while nothing actually changed.
+  if (!error && (!response.data || response.data.length === 0)) {
+    error = {
+      message:
+        "company_reviews: 0 rows updated (muhtemelen RLS engelledi)",
+    };
+  }
 
 } else {
 

@@ -28,15 +28,61 @@ async function requireAdmin(
   }
 }
 
+// After an approve/reject propagation loop over MODERATED_TABLES, confirms
+// no row was left behind still pointing at the given pending name+status.
+// The loop itself can't tell "0 rows because this table never had a match"
+// (expected on 5 of 6 tables, every single run) apart from "0 rows because
+// RLS silently blocked the one table that should have matched" — so instead
+// of trying to count up front, this re-checks after the fact: if anything
+// is still sitting there, something was silently skipped, and the caller
+// should fail loudly instead of marking the pending item as resolved.
+async function assertPropagationComplete(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  nameColumn: "pending_role_name" | "pending_company_name",
+  statusColumn: "role_status" | "company_status",
+  name: string,
+  context: string
+) {
+  for (const table of MODERATED_TABLES) {
+    const { data, error } = await supabase
+      .from(table)
+      .select("id")
+      .eq(nameColumn, name)
+      .eq(statusColumn, "pending")
+      .limit(1);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    if (data && data.length > 0) {
+      throw new Error(
+        `${context}: ${table} tablosunda hâlâ "${name}" için bekleyen satır var (muhtemelen RLS engelledi). İşlem tamamlanmadı.`
+      );
+    }
+  }
+}
+
 export async function markContactMessageRead(id: number) {
   const supabase = await createClient();
 
   await requireAdmin(supabase);
 
-  await supabase
+  const { data, error } = await supabase
     .from("contact_messages")
     .update({ read_at: new Date().toISOString() })
-    .eq("id", id);
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error(
+      "markContactMessageRead: 0 rows updated (muhtemelen RLS engelledi)"
+    );
+  }
 
   revalidatePath("/admin/moderation");
 }
@@ -46,7 +92,21 @@ export async function deleteContactMessage(id: number) {
 
   await requireAdmin(supabase);
 
-  await supabase.from("contact_messages").delete().eq("id", id);
+  const { data, error } = await supabase
+    .from("contact_messages")
+    .delete()
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error(
+      "deleteContactMessage: 0 rows deleted (muhtemelen RLS engelledi)"
+    );
+  }
 
   revalidatePath("/admin/moderation");
 }
@@ -139,6 +199,14 @@ for (const table of MODERATED_TABLES) {
   }
 }
 
+  await assertPropagationComplete(
+    supabase,
+    "pending_role_name",
+    "role_status",
+    roleName,
+    "approveRole"
+  );
+
   // Mark pending role approved
 const { data: pendingRole } =
   await supabase
@@ -147,16 +215,23 @@ const { data: pendingRole } =
     .eq("id", pendingRoleId)
     .single();
 
-  const { error: pendingError } =
+  const { data: pendingUpdateData, error: pendingError } =
     await supabase
       .from("pending_roles")
       .update({
         status: "approved",
       })
-      .eq("id", pendingRoleId);
+      .eq("id", pendingRoleId)
+      .select();
 
   if (pendingError) {
     throw new Error(pendingError.message);
+  }
+
+  if (!pendingUpdateData || pendingUpdateData.length === 0) {
+    throw new Error(
+      "approveRole: 0 rows updated on pending_roles (muhtemelen RLS engelledi)"
+    );
   }
 
   if (pendingRole?.suggested_name) {
@@ -304,18 +379,33 @@ export async function approveCompany(
     }
   }
 
-  const { error: pendingError } =
+  await assertPropagationComplete(
+    supabase,
+    "pending_company_name",
+    "company_status",
+    originalSuggestedName,
+    "approveCompany"
+  );
+
+  const { data: pendingUpdateData, error: pendingError } =
     await supabase
       .from("pending_companies")
       .update({
         status: "approved",
         company_id: companyId,
       })
-      .eq("id", pendingCompanyId);
+      .eq("id", pendingCompanyId)
+      .select();
 
   if (pendingError) {
     throw new Error(
       pendingError.message
+    );
+  }
+
+  if (!pendingUpdateData || pendingUpdateData.length === 0) {
+    throw new Error(
+      "approveCompany: 0 rows updated on pending_companies (muhtemelen RLS engelledi)"
     );
   }
 
@@ -422,15 +512,22 @@ const { data: pendingRole } =
     .eq("id", pendingRoleId)
     .single();
 
-const { error } = await supabase
+const { data: pendingUpdateData, error } = await supabase
   .from("pending_roles")
   .update({
     status: "rejected",
   })
-  .eq("id", pendingRoleId);
+  .eq("id", pendingRoleId)
+  .select();
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  if (!pendingUpdateData || pendingUpdateData.length === 0) {
+    throw new Error(
+      "rejectRole: 0 rows updated on pending_roles (muhtemelen RLS engelledi)"
+    );
   }
 
   
@@ -454,6 +551,14 @@ if (pendingRole?.suggested_name) {
       );
     }
   }
+
+  await assertPropagationComplete(
+    supabase,
+    "pending_role_name",
+    "role_status",
+    pendingRole.suggested_name,
+    "rejectRole"
+  );
 }
 
   revalidatePath(
@@ -493,16 +598,23 @@ export async function rejectCompany(
       .eq("id", pendingCompanyId)
       .single();
 
-  const { error } =
+  const { data: pendingUpdateData, error } =
     await supabase
       .from("pending_companies")
       .update({
         status: "rejected",
       })
-      .eq("id", pendingCompanyId);
+      .eq("id", pendingCompanyId)
+      .select();
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  if (!pendingUpdateData || pendingUpdateData.length === 0) {
+    throw new Error(
+      "rejectCompany: 0 rows updated on pending_companies (muhtemelen RLS engelledi)"
+    );
   }
 
   if (pendingCompany?.suggested_name) {
@@ -526,6 +638,14 @@ export async function rejectCompany(
         );
       }
     }
+
+    await assertPropagationComplete(
+      supabase,
+      "pending_company_name",
+      "company_status",
+      pendingCompany.suggested_name,
+      "rejectCompany"
+    );
   }
 
   revalidatePath(
@@ -566,17 +686,24 @@ const { data: pendingRole } =
     .eq("id", pendingRoleId)
     .single();
 
-  const { error } =
+  const { data: pendingUpdateData, error } =
     await supabase
       .from("pending_roles")
       .update({
         suggested_name:
           suggestedName.trim(),
       })
-      .eq("id", pendingRoleId);
+      .eq("id", pendingRoleId)
+      .select();
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  if (!pendingUpdateData || pendingUpdateData.length === 0) {
+    throw new Error(
+      "updatePendingRole: 0 rows updated on pending_roles (muhtemelen RLS engelledi)"
+    );
   }
 
   if (
@@ -603,6 +730,14 @@ const { data: pendingRole } =
     );
   }
 }
+
+  await assertPropagationComplete(
+    supabase,
+    "pending_role_name",
+    "role_status",
+    pendingRole.suggested_name,
+    "updatePendingRole"
+  );
 }
 
   revalidatePath(
@@ -655,8 +790,14 @@ export async function approveContent(
       performed_by: user?.id ?? null,
     });
 
+  // The approve itself already succeeded above (row-count checked) —
+  // don't throw here, or a log-insert failure would look to the admin
+  // like the approve failed when it actually went through.
   if (logError) {
-    throw new Error(logError.message);
+    console.error(
+      "approveContent: content_moderation_log insert failed",
+      logError
+    );
   }
 
   revalidatePath("/admin/moderation");
@@ -705,8 +846,13 @@ export async function rejectContent(
       performed_by: user?.id ?? null,
     });
 
+  // Same rationale as approveContent: the reject already succeeded, so
+  // a log-insert failure shouldn't be surfaced as if the reject failed.
   if (logError) {
-    throw new Error(logError.message);
+    console.error(
+      "rejectContent: content_moderation_log insert failed",
+      logError
+    );
   }
 
   revalidatePath("/admin/moderation");
@@ -787,14 +933,20 @@ if (
     review;
 }
 
-const { error } = await supabase
+const { data, error } = await supabase
   .from(tableName)
   .update(updateData)
-  .eq("id", id);
+  .eq("id", id)
+  .select();
 
 if (error) {
-  console.error(error);
-  return;
+  throw new Error(error.message);
+}
+
+if (!data || data.length === 0) {
+  throw new Error(
+    "saveContentEdits: 0 rows updated (muhtemelen RLS engelledi)"
+  );
 }
 
 revalidatePath(

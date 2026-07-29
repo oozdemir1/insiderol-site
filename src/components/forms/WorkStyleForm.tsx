@@ -351,13 +351,17 @@ const roleStatus =
     .maybeSingle();
 
   if (existingPending) {
-    await supabase
+    const { error: bumpRoleError } = await supabase
       .from("pending_roles")
       .update({
         submission_count:
           (existingPending.submission_count ?? 0) + 1,
       })
       .eq("id", existingPending.id);
+
+    if (bumpRoleError) {
+      console.warn(bumpRoleError);
+    }
 
   } else {
 
@@ -404,13 +408,17 @@ if (
 
   if (existingPending) {
 
-    await supabase
+    const { error: bumpCompanyError } = await supabase
       .from("pending_companies")
       .update({
         submission_count:
           (existingPending.submission_count ?? 0) + 1,
       })
       .eq("id", existingPending.id);
+
+    if (bumpCompanyError) {
+      console.warn(bumpCompanyError);
+    }
 
   } else {
 
@@ -490,13 +498,14 @@ if (
           formData.is_anonymous,
       };
 
-     const { error } =
+     const { data, error } =
   mode === "edit"
     ? await supabase
         .from("company_work_style")
         .update(payload)
         .eq("id", initialData?.id)
         .eq("user_id", user.id)
+        .select()
     : await supabase
         .from("company_work_style")
         .insert([payload]);
@@ -507,6 +516,16 @@ if (
       // message as an unhandled bug.
       console.warn(error);
       setSubmitError(translateSubmissionError(error.message));
+      return;
+    }
+
+    // RLS can silently match 0 rows instead of erroring — without this,
+    // the user sees "saved" while nothing actually changed.
+    if (mode === "edit" && (!data || data.length === 0)) {
+      console.warn(
+        "company_work_style: 0 rows updated (muhtemelen RLS engelledi)"
+      );
+      setSubmitError(translateSubmissionError());
       return;
     }
 

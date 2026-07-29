@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Plus, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -186,12 +186,21 @@ export default function CompareView({
     null,
   ]);
 
+  // Per-slot request counter — a fast reselect (or clear) on a slow
+  // connection can otherwise let a stale fetch resolve after a newer one
+  // and overwrite it, since both target the same slot index.
+  const selectRequestIds = useRef<number[]>([0, 0, 0]);
+
   const selectCompany = async (index: number, company: any) => {
+    const requestId = ++selectRequestIds.current[index];
+
     const { data } = await supabase
       .from("companies")
       .select("id, name, slug, industry, hq_city")
       .eq("id", company.id)
       .single();
+
+    if (selectRequestIds.current[index] !== requestId) return;
 
     setCompanies((prev) =>
       prev.map((c, i) => (i === index ? (data as CompanyInfo) : c))
@@ -199,6 +208,8 @@ export default function CompareView({
   };
 
   const clearSlot = (index: number) => {
+    selectRequestIds.current[index]++;
+
     setInputs((prev) => prev.map((v, i) => (i === index ? "" : v)));
     setCompanies((prev) => prev.map((c, i) => (i === index ? null : c)));
 

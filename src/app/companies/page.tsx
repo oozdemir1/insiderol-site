@@ -98,26 +98,38 @@ export default async function CompaniesPage({
       q = q.gte("average_rating", Number(averageRatingFilter));
     }
 
+    // Every branch appends an `id` tiebreaker — without it, rows that tie
+    // on the primary sort column (e.g. many companies with 0 reviews) have
+    // no guaranteed stable order across the separate per-page queries, so a
+    // company can reappear on the next page while another gets skipped.
     if (sortFilter === "newest") {
-      q = q.order("created_at", { ascending: false });
+      q = q
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: true });
     } else if (sortFilter === "rating") {
       q = q
         .order("average_rating", { ascending: false })
-        .order("review_count", { ascending: false });
+        .order("review_count", { ascending: false })
+        .order("id", { ascending: true });
     } else if (sortFilter === "reviews") {
       q = q
         .order("review_count", { ascending: false })
-        .order("average_rating", { ascending: false });
+        .order("average_rating", { ascending: false })
+        .order("id", { ascending: true });
     } else if (sortFilter === "salary") {
       q = q
         .order("average_salary", { ascending: false })
-        .order("salary_count", { ascending: false });
+        .order("salary_count", { ascending: false })
+        .order("id", { ascending: true });
     } else if (sortFilter === "salaryCount") {
       q = q
         .order("salary_count", { ascending: false })
-        .order("average_salary", { ascending: false });
+        .order("average_salary", { ascending: false })
+        .order("id", { ascending: true });
     } else {
-      q = q.order("name", { ascending: true });
+      q = q
+        .order("name", { ascending: true })
+        .order("id", { ascending: true });
     }
 
     return q;

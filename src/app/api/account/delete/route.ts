@@ -30,7 +30,32 @@ export async function DELETE() {
   // ON DELETE SET NULL on those tables (see the SQL handed off alongside
   // this route) orphans them instead of cascading, per the product
   // decision to keep anonymous posts after account deletion.
-  await supabase.from("profiles").delete().eq("id", user.id);
+  const { data: deletedProfile, error: profileDeleteError } = await supabase
+    .from("profiles")
+    .delete()
+    .eq("id", user.id)
+    .select();
+
+  if (profileDeleteError) {
+    return NextResponse.json(
+      { error: profileDeleteError.message },
+      { status: 500 }
+    );
+  }
+
+  // If this silently matched 0 rows (RLS), deleting the auth user below
+  // would orphan the profiles row forever — its username could never be
+  // reused, and there'd be no way to detect or fix it after the fact.
+  // Stop here instead of deleting the auth user out from under it.
+  if (!deletedProfile || deletedProfile.length === 0) {
+    return NextResponse.json(
+      {
+        error:
+          "Profil silinemedi (muhtemelen RLS engelledi). Hesap silme işlemi durduruldu.",
+      },
+      { status: 500 }
+    );
+  }
 
   const admin = createAdminClient();
   const { error } = await admin.auth.admin.deleteUser(user.id);

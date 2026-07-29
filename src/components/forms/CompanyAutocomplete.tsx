@@ -103,14 +103,18 @@ useEffect(() => {
 
       setFormData?.((prev: any) => {
 
-      if (prev.companyId === null) {
+      if (prev.companyId === null && prev.company_id === null) {
         return prev;
       }
 
       return {
         ...prev,
 
+        // Consuming forms disagree on casing (Salary/Review read
+        // companyId, WorkStyle/Benefits/Compensation/Interview read
+        // company_id) — write both so this component works for either.
         companyId: null,
+        company_id: null,
       };
     });
     }
@@ -234,6 +238,7 @@ const shouldShowDropdown =
               ...prev,
 
               companyId: company.id,
+              company_id: company.id,
 
               companyName: company.name,
 
@@ -287,8 +292,9 @@ const shouldShowDropdown =
 
                   setFormData?.((prev: any) => ({
                     ...prev,
-                    
+
                     companyId: company.id,
+                    company_id: company.id,
 
                     companyName:
                       company.name,
