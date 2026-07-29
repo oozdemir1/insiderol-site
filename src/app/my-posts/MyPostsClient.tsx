@@ -142,7 +142,7 @@ export default function MyPostsClient({
                 "
               />
 
-              <span className="text-black/50">
+              <span className="hidden md:inline text-black/50">
                 Anonim
               </span>
 
