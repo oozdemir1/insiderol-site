@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/server";
 import InterviewForm from "@/components/forms/InterviewForm";
 import { ShieldCheck } from "lucide-react";
@@ -17,7 +18,15 @@ export default async function EditInterviewPage({
   const supabase =
     await createClient();
 
-  const result =
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    notFound();
+  }
+
+  const { data: interview } =
     await supabase
       .from("interview_experiences")
       .select(`
@@ -29,10 +38,13 @@ export default async function EditInterviewPage({
         ),
         roles(name)
       `)
-      .eq("id", id);
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .single();
 
-  const interview =
-    result.data?.[0];
+  if (!interview) {
+    notFound();
+  }
 
   const transformedInterview = {
     ...interview,

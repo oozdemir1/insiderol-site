@@ -622,7 +622,7 @@ return (
               />
             }
 
-             buttonText="Paylaşımlarıma Git"
+             buttonText="Katkılarıma Git"
               onButtonClick={() =>
               router.push("/my-posts?tab=Ücret Politikası")
             }
@@ -1214,6 +1214,8 @@ return (
               onConfirm={() => {
 
                 setShowExitConfirm(false);
+                setErrors({});
+                setSubmitError("");
 
                 localStorage.removeItem(
                   draftKey

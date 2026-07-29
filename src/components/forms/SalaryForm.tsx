@@ -644,7 +644,7 @@ if (mode === "edit") {
       />
     }
 
-    buttonText="Paylaşımlarıma Git"
+    buttonText="Katkılarıma Git"
       onButtonClick={() =>
         router.push("/my-posts?tab=Maaş")
       }
@@ -1179,6 +1179,8 @@ if (mode === "edit") {
                   onConfirm={() => {
 
                     setShowExitConfirm(false);
+                    setErrors({});
+                    setSubmitError("");
 
                     localStorage.removeItem(
                       draftKey

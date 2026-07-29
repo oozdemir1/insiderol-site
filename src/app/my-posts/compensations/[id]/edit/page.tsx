@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/server";
 import CompensationForm from "@/components/forms/CompensationForm";
 import { ShieldCheck } from "lucide-react";
@@ -21,7 +22,11 @@ const {
   data: { user },
 } = await supabase.auth.getUser();
 
-const result =
+if (!user) {
+  notFound();
+}
+
+const { data: compensation } =
   await supabase
     .from("company_compensation")
     .select(`
@@ -33,10 +38,13 @@ const result =
         ),
         roles(name)
         `)
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single();
 
-const compensation =
-  result.data?.[0];
+if (!compensation) {
+  notFound();
+}
 
   const transformedCompensation = {
   ...compensation,

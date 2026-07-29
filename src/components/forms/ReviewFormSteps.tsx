@@ -663,7 +663,7 @@ setSubmitted(true);
       />
     }
 
-     buttonText="Paylaşımlarıma Git"
+     buttonText="Katkılarıma Git"
       onButtonClick={() =>
         router.push("/my-posts?tab=Yorum")
       }
@@ -1528,6 +1528,8 @@ setSubmitted(true);
                            onConfirm={() => {
 
                            setShowExitConfirm(false);
+                           setErrors({});
+                           setSubmitError("");
 
                            localStorage.removeItem(
                               draftKey

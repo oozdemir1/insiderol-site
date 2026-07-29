@@ -691,7 +691,7 @@ setSubmitted(true);
                 className="form-success-icon"
               />
             }
-             buttonText="Paylaşımlarıma Git"
+             buttonText="Katkılarıma Git"
               onButtonClick={() =>
               router.push("/my-posts?tab=Mülakat Süreci")
             }
@@ -1480,6 +1480,8 @@ setSubmitted(true);
               onConfirm={() => {
 
                  setShowExitConfirm(false);
+                 setErrors({});
+                 setSubmitError("");
 
                  localStorage.removeItem(
                   draftKey
