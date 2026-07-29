@@ -91,7 +91,7 @@ export default function ExploreClient({
           mb-4
         "
         style={{
-          paddingBottom: "1rem",
+          paddingBottom: "1.2rem",
         }}
       >
         <div className="container mx-auto px-4 max-w-7xl flex flex-col items-center sm:flex-row sm:flex-wrap sm:justify-between gap-x-4 gap-y-3">
@@ -217,9 +217,10 @@ export default function ExploreClient({
 
         <div
           className="
-            fixed
+            absolute
             left-0
             right-0
+            bottom-0
             h-4
             border-b
             bg-[var(--background)]
@@ -227,9 +228,6 @@ export default function ExploreClient({
             border-black/10
             pointer-events-none
           "
-          style={{
-            marginTop: "1.75px",
-          }}
         />
       </div>
 
