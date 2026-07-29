@@ -566,7 +566,7 @@ export default function CompareView({
                 style={{ borderStyle: "dashed" }}
                 className="
                   form-field
-                  flex items-center justify-center gap-2
+                  hidden sm:flex items-center justify-center gap-2
                   text-[var(--muted-dark)]
                   hover:text-[var(--text-dark)]
                 "
@@ -757,7 +757,7 @@ export default function CompareView({
                 style={{ borderStyle: "dashed" }}
                 className="
                   form-field
-                  flex items-center justify-center gap-2
+                  hidden sm:flex items-center justify-center gap-2
                   text-[var(--muted-dark)]
                   hover:text-[var(--text-dark)]
                 "

@@ -11,6 +11,7 @@ import RoleAutocomplete from "@/components/forms/RoleAutocomplete";
 import CompanyAutocomplete from "@/components/forms/CompanyAutocomplete";
 import SelectDropdown from "@/components/forms/SelectDropdown";
 import TurkishCitySelect from "@/components/forms/TurkishCitySelect";
+import FiltersToggle from "@/components/FiltersToggle";
 import { experienceLevels } from "@/app/constants/experienceLevels";
 
 const TYPE_TABS: {
@@ -91,15 +92,18 @@ export default function ExploreClient({
           mb-4
         "
         style={{
-          paddingBottom: "1.2rem",
+          paddingBottom: "1.25rem",
         }}
       >
         <div className="container mx-auto px-4 max-w-7xl flex flex-col items-center sm:flex-row sm:flex-wrap sm:justify-between gap-x-4 gap-y-3">
           {compareMode ? (
-            <div className="grid gap-3 grid-cols-2 md:grid-cols-4 w-full sm:flex-1">
-              {/* The role/company picker is what's actually being
-                  compared — the other three just narrow it — so it leads
-                  the row instead of trailing behind them. */}
+            <div className="w-full sm:flex-1">
+              <FiltersToggle breakpoint="sm">
+              <div className="grid gap-3 grid-cols-1 sm:grid-cols-4">
+              {/* All four are equally optional narrowing filters — none
+                  of them is what's actually being compared (that's
+                  CompareView's own 2-3 slots), so all collapse behind
+                  the mobile Filtreler toggle together. */}
               {compareSubMode === "role" ? (
                 <div className="relative">
                   <CompanyAutocomplete
@@ -191,6 +195,8 @@ export default function ExploreClient({
                 options={YEAR_OPTIONS}
                 placeholder="Tüm Yıllar"
               />
+              </div>
+              </FiltersToggle>
             </div>
           ) : (
             // Narrows one continuous feed by type rather than switching
