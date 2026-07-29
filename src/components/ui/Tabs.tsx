@@ -23,7 +23,7 @@ export default function Tabs({
               
       "
         style={{
-        paddingBottom: "1rem",
+        paddingBottom: "1.2rem",
       }}
     >
       <div
@@ -65,9 +65,10 @@ export default function Tabs({
       </div>
           <div
               className="
-                fixed
+                absolute
                 left-0
                 right-0
+                bottom-0
                 h-4
                 border-b
                 bg-[var(--background)]
@@ -75,9 +76,6 @@ export default function Tabs({
                 border-black/10
                 pointer-events-none
               "
-              style={{
-                marginTop: "1.75px",
-              }}
             />
             
     </div>

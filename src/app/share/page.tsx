@@ -96,7 +96,7 @@ function ShareTabs({
           />
 
           
-          <span className="text-black/50">Anonim</span>
+          <span className="hidden md:inline text-black/50">Anonim</span>
           <span className="font-medium text-[var(--text-dark)]">
             {activeTab}
           </span>

@@ -261,7 +261,7 @@ export default function Navbar({
                         href="/my-posts"
                         className="profile-menu-item"
                       >
-                        Paylaşımlarım
+                        Katkılarım
                       </a>
 
                       <a
@@ -332,28 +332,28 @@ export default function Navbar({
 
                 <a
                   href="/share"
-                  className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                  className="text-[var(--muted)] hover:text-[var(--accent)] active:text-[var(--accent)] transition-all duration-200"
                 >
                   Paylaş
                 </a>
 
                 <a
                   href="/companies"
-                  className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                  className="text-[var(--muted)] hover:text-[var(--accent)] active:text-[var(--accent)] transition-all duration-200"
                 >
                   Şirketler
                 </a>
 
                 <a
                   href="/roles"
-                  className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                  className="text-[var(--muted)] hover:text-[var(--accent)] active:text-[var(--accent)] transition-all duration-200"
                 >
                   Pozisyonlar
                 </a>
 
                 <a
                   href="/explore"
-                  className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                  className="text-[var(--muted)] hover:text-[var(--accent)] active:text-[var(--accent)] transition-all duration-200"
                 >
                   Keşfet
                 </a>
@@ -366,21 +366,21 @@ export default function Navbar({
 
                     <a
                       href="/profile"
-                      className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                      className="text-[var(--muted)] hover:text-[var(--accent)] active:text-[var(--accent)] transition-all duration-200"
                     >
                       Profil
                     </a>
 
                     <a
                       href="/my-posts"
-                      className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                      className="text-[var(--muted)] hover:text-[var(--accent)] active:text-[var(--accent)] transition-all duration-200"
                     >
-                      Paylaşımlarım
+                      Katkılarım
                     </a>
 
                     <a
                       href="/settings"
-                      className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
+                      className="text-[var(--muted)] hover:text-[var(--accent)] active:text-[var(--accent)] transition-all duration-200"
                     >
                       Ayarlar
                     </a>
@@ -398,7 +398,7 @@ export default function Navbar({
                       await supabase.auth.signOut();
                       window.location.href = "/";
                     }}
-                    className="text-left text-red-400 hover:text-red-300 transition-all duration-200"
+                    className="text-left text-red-400 hover:text-red-300 active:text-red-300 transition-all duration-200"
                   >
                     Çıkış Yap
                   </button>

@@ -151,7 +151,7 @@ export default function MyPostsClient({
               </span>
 
               <span className="text-black/50">
-                Paylaşımlarım
+                Katkılarım
               </span>
 
             </div>
