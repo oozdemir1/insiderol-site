@@ -4,6 +4,7 @@ import PendingRolesTab from "./PendingRolesTab";
 import PendingCompaniesTab from "./PendingCompaniesTab";
 import PendingContentTab from "./PendingContentTab";
 import ContactMessagesTab from "./ContactMessagesTab";
+import { MODERATED_TABLES } from "./moderatedTables";
 
 export default async function ModerationPage({
   searchParams,
@@ -36,6 +37,38 @@ searchParams: Promise<{
   if (!profile?.is_admin) {
     redirect("/");
   }
+
+  // Tab-bar badges — lets an admin see what needs attention without
+  // clicking into each tab first (each tab already computes its own
+  // status counts, just not surfaced up here).
+  const { count: rolesPendingCount } = await supabase
+    .from("pending_roles")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "pending");
+
+  const { count: companiesPendingCount } = await supabase
+    .from("pending_companies")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "pending");
+
+  const contentPendingResults = await Promise.all(
+    MODERATED_TABLES.map((table) =>
+      supabase
+        .from(table)
+        .select("*", { count: "exact", head: true })
+        .eq("moderation_status", "pending")
+    )
+  );
+
+  const contentPendingCount = contentPendingResults.reduce(
+    (sum, { count }) => sum + (count ?? 0),
+    0
+  );
+
+  const { count: messagesUnreadCount } = await supabase
+    .from("contact_messages")
+    .select("id", { count: "exact", head: true })
+    .is("read_at", null);
 
  const params = await searchParams;
 
@@ -88,7 +121,7 @@ const titleColor =
         : "form-btn form-btn-secondary"
     }
   >
-    Roller
+    Roller ({rolesPendingCount ?? 0})
   </a>
 
   <a
@@ -99,7 +132,7 @@ const titleColor =
         : "form-btn form-btn-secondary"
     }
   >
-    Şirketler
+    Şirketler ({companiesPendingCount ?? 0})
   </a>
 
   <a
@@ -110,7 +143,7 @@ const titleColor =
       : "form-btn form-btn-secondary"
   }
 >
-  İçerikler
+  İçerikler ({contentPendingCount})
 </a>
 
   <a
@@ -121,7 +154,7 @@ const titleColor =
       : "form-btn form-btn-secondary"
   }
 >
-  Mesajlar
+  Mesajlar ({messagesUnreadCount ?? 0})
 </a>
 
 </div>
