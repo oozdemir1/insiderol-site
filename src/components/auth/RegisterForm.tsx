@@ -95,10 +95,14 @@ export default function RegisterForm() {
     email,
     password,
     options: {
+      // Read back from user_metadata in /auth/callback once the user
+      // confirms their email — that's also where the profiles row
+      // actually gets created (see the comment there for why).
       data: {
         username: cleanUsername,
       },
       captchaToken,
+      emailRedirectTo: `${window.location.origin}/auth/callback`,
     },
   });
 
@@ -112,10 +116,7 @@ export default function RegisterForm() {
 
   // Supabase's enumeration-safe response for an already-registered email:
   // signUp() returns 200 with no error, but a fake user object (a random
-  // id, not the real account's) with an empty identities array. Must be
-  // caught here, before complete-registration — that route looks the id
-  // up via the admin API, which won't find this fake id and would fail
-  // with a generic error instead of surfacing "email taken".
+  // id, not the real account's) with an empty identities array.
   if (data.user && data.user.identities?.length === 0) {
     setLoading(false);
     turnstileRef.current?.reset();
@@ -123,85 +124,6 @@ export default function RegisterForm() {
     setFieldErrors({ email: "Bu e-posta adresiyle zaten bir hesap var." });
     return;
   }
-
-  if (data.user) {
-
-  // Done server-side (service role) rather than a direct client insert:
-  // signUp() leaves no active session while email confirmation is
-  // pending, so a client-side insert runs as the anon role and gets
-  // rejected by RLS.
-  let completeRes: Response;
-
-  try {
-    completeRes = await fetch("/api/auth/complete-registration", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: data.user.id,
-        username: cleanUsername,
-        email,
-      }),
-    });
-  } catch (networkError) {
-    console.error(networkError);
-    setLoading(false);
-    setErrorMessage(
-      "Kayıt sırasında bir sorun oluştu. Lütfen tekrar dene."
-    );
-    return;
-  }
-
-  if (!completeRes.ok) {
-    const { error: completeError } = await completeRes
-      .json()
-      .catch(() => ({ error: "unknown" }));
-
-    if (completeError === "email_taken") {
-      setLoading(false);
-      setFieldErrors({ email: "Bu e-posta adresiyle zaten bir hesap var." });
-      return;
-    }
-
-    if (completeError === "username_taken") {
-      setLoading(false);
-      setFieldErrors({ username: "Bu kullanıcı adı zaten kullanılıyor." });
-      return;
-    }
-
-    console.error("complete-registration failed:", completeError);
-
-    // Without a profile row this account can never log in (username
-    // lookup finds nothing) and the email/username are now stuck as
-    // "taken" — roll the auth user back so they can just try again.
-    // fetch() rejects on a real network failure (not just a non-2xx
-    // status) — without this try/catch, that rejection would skip
-    // setLoading(false)/setErrorMessage below and leave the form stuck
-    // on "Kaydediliyor..." with no way to recover short of a reload.
-    try {
-      const rollbackRes = await fetch("/api/auth/rollback-registration", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: data.user.id }),
-      });
-
-      if (!rollbackRes.ok) {
-        console.error(
-          "rollback-registration responded with",
-          rollbackRes.status
-        );
-      }
-    } catch (rollbackError) {
-      console.error(rollbackError);
-    }
-
-    setLoading(false);
-    setErrorMessage(
-      "Kayıt sırasında bir sorun oluştu. Lütfen tekrar dene."
-    );
-    return;
-  }
-
-}
 
   setLoading(false);
   setDone(true);
