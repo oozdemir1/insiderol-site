@@ -112,16 +112,51 @@ export default function RegisterForm() {
 
   if (data.user) {
 
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .insert({
-      id: data.user.id,
-      username: cleanUsername,
-      email,
-    });
+  // Done server-side (service role) rather than a direct client insert:
+  // signUp() leaves no active session while email confirmation is
+  // pending, so a client-side insert runs as the anon role and gets
+  // rejected by RLS. This route also catches Supabase's enumeration-safe
+  // signUp response (empty identities array) for an email that's
+  // actually already registered.
+  let completeRes: Response;
 
-  if (profileError) {
-    console.error(profileError);
+  try {
+    completeRes = await fetch("/api/auth/complete-registration", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: data.user.id,
+        username: cleanUsername,
+        email,
+      }),
+    });
+  } catch (networkError) {
+    console.error(networkError);
+    setLoading(false);
+    setErrorMessage(
+      "Kayıt sırasında bir sorun oluştu. Lütfen tekrar dene."
+    );
+    return;
+  }
+
+  if (!completeRes.ok) {
+    const { error: completeError } = await completeRes
+      .json()
+      .catch(() => ({ error: "unknown" }));
+
+    if (completeError === "email_taken") {
+      setLoading(false);
+      setFieldErrors({ email: "Bu e-posta adresiyle zaten bir hesap var." });
+      return;
+    }
+
+    if (completeError === "username_taken") {
+      setLoading(false);
+      setFieldErrors({ username: "Bu kullanıcı adı zaten kullanılıyor." });
+      return;
+    }
+
+    console.error("complete-registration failed:", completeError);
 
     // Without a profile row this account can never log in (username
     // lookup finds nothing) and the email/username are now stuck as
