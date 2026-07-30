@@ -534,6 +534,15 @@ if (
 
 
 
+    // The 15-minute edit window is otherwise only enforced by the UI
+    // (My*Card's canEdit timer) — this filter makes it hold even if
+    // someone navigates straight to the edit URL after that window,
+    // since it's checked against the row's actual created_at in the
+    // DB, not anything the client sends.
+    const editCutoff = new Date(
+      Date.now() - 15 * 60 * 1000
+    ).toISOString();
+
     const { data, error } =
     mode === "edit"
       ? await supabase
@@ -541,6 +550,7 @@ if (
           .update(payload)
           .eq("id", initialData?.id)
           .eq("user_id", user.id)
+          .gte("created_at", editCutoff)
           .select()
       : await supabase
           .from("company_benefits")
