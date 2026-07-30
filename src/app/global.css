@@ -211,6 +211,16 @@ button {
   }
 }
 
+/* Mobile gets its own smaller pull-up: the title is sr-only here so the
+   badge is the first visible thing, and centering the flex container
+   leaves it (and the 4 CTA cards below it) sitting lower than feels
+   natural on a phone screen. */
+@media (max-width: 767px) {
+  .hero-container {
+    transform: translateY(-36px);
+  }
+}
+
 .hero-badge {
   display: inline-flex;
   align-items: center;
@@ -456,6 +466,42 @@ backdrop-filter: blur(8px);
   font-size: 0.96rem;
 
   line-height: 1.6;
+}
+
+/* Mobile: same 4-card grid but smaller/denser — the desktop sizing
+   (180px min-height, 1.3rem title) reads oversized on a 2-column
+   phone layout. */
+@media (max-width: 767px) {
+  .hero-cta-card {
+    gap: 0.6rem;
+
+    padding: 1.1rem;
+
+    min-height: 130px;
+
+    border-radius: 1.25rem;
+  }
+
+  .hero-cta-icon {
+    width: 2.4rem;
+    height: 2.4rem;
+
+    border-radius: 0.75rem;
+
+    font-size: 1rem;
+  }
+
+  .hero-cta-title {
+    font-size: 1.05rem;
+  }
+
+  .hero-cta-description {
+    margin-top: 0.3rem;
+
+    font-size: 0.82rem;
+
+    line-height: 1.45;
+  }
 }
 
 /* for pages like paylas yorum and mulakat */
