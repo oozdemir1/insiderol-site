@@ -59,8 +59,26 @@ export default function AuthCallbackPage() {
             return;
           }
 
-          // Someone else claimed this username in the meantime — fall
-          // through to letting this user pick a different one.
+          // A concurrent run of this same callback (e.g. the
+          // confirmation link opened in two tabs) may have already
+          // inserted this exact row — id is the primary key tied 1:1 to
+          // this user, so if a profile now exists for it, that's what
+          // happened. Treat it as success rather than falling through:
+          // otherwise complete-profile's uniqueness check passes for
+          // any new username and its upsert (matched on id) would
+          // silently rename the profile that other run just created.
+          // Only a genuine failure (someone else already has this
+          // username) leaves no row at all.
+          const { data: raceProfile } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("id", user.id)
+            .maybeSingle();
+
+          if (raceProfile) {
+            router.push("/");
+            return;
+          }
         }
 
         router.push("/auth/complete-profile");

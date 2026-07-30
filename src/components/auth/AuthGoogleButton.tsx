@@ -9,8 +9,10 @@ export default function AuthGoogleButton() {
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-          redirectTo:
-            `${window.location.origin}/auth/callback?next=${encodeURIComponent(window.location.pathname)}`,
+          // The actual post-auth destination comes from
+          // localStorage["redirectAfterAuth"] (set by the caller before
+          // opening the auth flow) — read back in /auth/callback.
+          redirectTo: `${window.location.origin}/auth/callback`,
           // Without this, Google silently reuses whatever Google session
           // is already active in the browser and skips the account
           // chooser entirely — surprising right after logging out and
