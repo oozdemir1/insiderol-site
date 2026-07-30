@@ -66,48 +66,56 @@ export default function LoginForm({
 
   setLoading(true);
 
-  let loginEmail = identifier;
+  // try/finally guarantees setLoading(false) runs even if fetch/json()
+  // throws (network blip, aborted request) instead of resolving — without
+  // it the button would stick on "Giriş yapılıyor..." with no way to
+  // recover short of a reload.
+  try {
+    let loginEmail = identifier;
 
-  if (!identifier.includes("@")) {
+    if (!identifier.includes("@")) {
 
-    // Resolved via a server-side route (service-role lookup), not a
-    // direct client query — see src/app/api/auth/resolve-username.
-    const resolveRes = await fetch("/api/auth/resolve-username", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: identifier }),
+      // Resolved via a server-side route (service-role lookup), not a
+      // direct client query — see src/app/api/auth/resolve-username.
+      const resolveRes = await fetch("/api/auth/resolve-username", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: identifier }),
+      });
+
+      const { email } = await resolveRes.json();
+
+      if (!email) {
+        // Deliberately the same generic message as a wrong password below
+        // — a distinct "user not found" message would let someone
+        // enumerate which usernames exist on the platform.
+        setErrorMessage("E-posta/kullanıcı adı veya şifre hatalı.");
+        return;
+      }
+
+      loginEmail = email;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: loginEmail,
+      password,
+      options: { captchaToken },
     });
 
-    const { email } = await resolveRes.json();
-
-    if (!email) {
-      // Deliberately the same generic message as a wrong password below
-      // — a distinct "user not found" message would let someone
-      // enumerate which usernames exist on the platform.
-      setErrorMessage("E-posta/kullanıcı adı veya şifre hatalı.");
-      setLoading(false);
+    if (error) {
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
+      setErrorMessage(translateAuthError(error.message));
       return;
     }
 
-    loginEmail = email;
+    onSuccess?.();
+  } catch (err) {
+    console.error(err);
+    setErrorMessage("Bir sorun oluştu. Lütfen tekrar dene.");
+  } finally {
+    setLoading(false);
   }
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email: loginEmail,
-    password,
-    options: { captchaToken },
-  });
-
-  setLoading(false);
-
-  if (error) {
-    turnstileRef.current?.reset();
-    setCaptchaToken(null);
-    setErrorMessage(translateAuthError(error.message));
-    return;
-  }
-
-  onSuccess?.();
 }
 
   return (

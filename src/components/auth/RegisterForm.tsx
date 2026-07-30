@@ -84,56 +84,64 @@ export default function RegisterForm({
 
   setLoading(true);
 
-  const cleanUsername = username.trim().toLowerCase();
+  // try/finally guarantees setLoading(false) runs even if one of these
+  // awaited calls throws instead of resolving (network blip, aborted
+  // request) — without it the button would stick on "Kaydediliyor..."
+  // with no way to recover short of a reload.
+  try {
+    const cleanUsername = username.trim().toLowerCase();
 
-  const { data: existingUser } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("username", cleanUsername)
-    .maybeSingle();
+    const { data: existingUser } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", cleanUsername)
+      .maybeSingle();
 
-  if (existingUser) {
-    setLoading(false);
-    setFieldErrors({ username: "Bu kullanıcı adı zaten kullanılıyor." });
-    return;
-  }
+    if (existingUser) {
+      setFieldErrors({ username: "Bu kullanıcı adı zaten kullanılıyor." });
+      return;
+    }
 
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      // Read back from user_metadata in /auth/callback once the user
-      // confirms their email — that's also where the profiles row
-      // actually gets created (see the comment there for why).
-      data: {
-        username: cleanUsername,
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        // Read back from user_metadata in /auth/callback once the user
+        // confirms their email — that's also where the profiles row
+        // actually gets created (see the comment there for why).
+        data: {
+          username: cleanUsername,
+        },
+        captchaToken,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
-      captchaToken,
-      emailRedirectTo: `${window.location.origin}/auth/callback`,
-    },
-  });
+    });
 
-  if (error) {
+    if (error) {
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
+      setErrorMessage(translateAuthError(error.message));
+      return;
+    }
+
+    // Supabase's enumeration-safe response for an already-registered
+    // email: signUp() returns 200 with no error, but a fake user object
+    // (a random id, not the real account's) with an empty identities
+    // array.
+    if (data.user && data.user.identities?.length === 0) {
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
+      setFieldErrors({ email: "Bu e-posta adresiyle zaten bir hesap var." });
+      return;
+    }
+
+    onRegistered?.(email);
+  } catch (err) {
+    console.error(err);
+    setErrorMessage("Bir sorun oluştu. Lütfen tekrar dene.");
+  } finally {
     setLoading(false);
-    turnstileRef.current?.reset();
-    setCaptchaToken(null);
-    setErrorMessage(translateAuthError(error.message));
-    return;
   }
-
-  // Supabase's enumeration-safe response for an already-registered email:
-  // signUp() returns 200 with no error, but a fake user object (a random
-  // id, not the real account's) with an empty identities array.
-  if (data.user && data.user.identities?.length === 0) {
-    setLoading(false);
-    turnstileRef.current?.reset();
-    setCaptchaToken(null);
-    setFieldErrors({ email: "Bu e-posta adresiyle zaten bir hesap var." });
-    return;
-  }
-
-  setLoading(false);
-  onRegistered?.(email);
 }
 
   return (

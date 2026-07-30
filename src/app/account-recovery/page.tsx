@@ -30,53 +30,61 @@ export default function AccountRecoveryPage() {
     setFieldError("");
     setLoading(true);
 
-    let resetEmail = identifier.trim();
+    // try/finally guarantees setLoading(false) runs even if fetch/json()
+    // or resetPasswordForEmail throws instead of resolving (network
+    // blip, aborted request) — without it the button would stick on
+    // "Gönderiliyor..." with no way to recover short of a reload.
+    try {
+      let resetEmail = identifier.trim();
 
-    if (!resetEmail.includes("@")) {
-      // Resolved via a server-side route (service-role lookup), not a
-      // direct client query — see src/app/api/auth/resolve-username.
-      const resolveRes = await fetch("/api/auth/resolve-username", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: resetEmail }),
-      });
+      if (!resetEmail.includes("@")) {
+        // Resolved via a server-side route (service-role lookup), not a
+        // direct client query — see src/app/api/auth/resolve-username.
+        const resolveRes = await fetch("/api/auth/resolve-username", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: resetEmail }),
+        });
 
-      const { email } = await resolveRes.json();
+        const { email } = await resolveRes.json();
 
-      if (!email) {
-        // No matching username — show the same "sent" success state
-        // anyway rather than a distinct error. A different message
-        // here would let someone enumerate valid usernames the same
-        // way a distinct "user not found" would on the login form.
-        setLoading(false);
-        setSent(true);
+        if (!email) {
+          // No matching username — show the same "sent" success state
+          // anyway rather than a distinct error. A different message
+          // here would let someone enumerate valid usernames the same
+          // way a distinct "user not found" would on the login form.
+          setSent(true);
+          return;
+        }
+
+        resetEmail = email;
+      }
+
+      // Supabase never errors here for "email not found" either (handled
+      // enumeration-safely at the API level) — an error means an actual
+      // send failure (rate limit, SMTP issue, etc.), safe to surface.
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        resetEmail,
+        {
+          redirectTo: `${window.location.origin}/auth/reset-password`,
+          captchaToken,
+        }
+      );
+
+      if (error) {
+        turnstileRef.current?.reset();
+        setCaptchaToken(null);
+        setErrorMessage(error.message);
         return;
       }
 
-      resetEmail = email;
+      setSent(true);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Bir sorun oluştu. Lütfen tekrar dene.");
+    } finally {
+      setLoading(false);
     }
-
-    // Supabase never errors here for "email not found" either (handled
-    // enumeration-safely at the API level) — an error means an actual
-    // send failure (rate limit, SMTP issue, etc.), safe to surface.
-    const { error } = await supabase.auth.resetPasswordForEmail(
-      resetEmail,
-      {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
-        captchaToken,
-      }
-    );
-
-    setLoading(false);
-
-    if (error) {
-      turnstileRef.current?.reset();
-      setCaptchaToken(null);
-      setErrorMessage(error.message);
-      return;
-    }
-
-    setSent(true);
   };
 
   return (

@@ -23,73 +23,82 @@ export default function CompleteProfilePage() {
 
     setLoading(true);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // try/finally guarantees setLoading(false) runs even if one of these
+    // awaited calls throws instead of resolving (network blip, aborted
+    // request) — without it the button would stick on "Kaydediliyor..."
+    // with no way to recover short of a reload.
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    // no user
-    if (!user) {
-      router.push("/");
-      return;
-    }
+      // no user
+      if (!user) {
+        router.push("/");
+        return;
+      }
 
-    // username taken?
-    const { data: existingUser } =
-      await supabase
+      // username taken?
+      const { data: existingUser } =
+        await supabase
+          .from("profiles")
+          .select("id")
+          .eq("username", cleanUsername)
+          .maybeSingle();
+
+      if (existingUser) {
+
+        setErrorMessage(
+          "Bu kullanıcı adı zaten kullanılıyor."
+          );
+
+          setTimeout(() => {
+          setErrorMessage("");
+          }, 5000);
+
+        return;
+      }
+
+      // create profile
+      const { error } = await supabase
         .from("profiles")
-        .select("id")
-        .eq("username", cleanUsername)
-        .maybeSingle();
+        .upsert([
+          {
+            id: user.id,
+            email: user.email,
+            username: cleanUsername,
+            avatar_url: randomAvatar,
+          },
+        ]);
 
-    if (existingUser) {
+      if (error) {
 
-      setErrorMessage(
-        "Bu kullanıcı adı zaten kullanılıyor."
+        console.error(error);
+
+        setErrorMessage(
+          "Bir hata oluştu. Lütfen tekrar dene."
         );
 
-        setTimeout(() => {
-        setErrorMessage("");
-        }, 5000);
+        return;
+      }
 
-      setLoading(false);
+      const redirect =
+        localStorage.getItem(
+          "redirectAfterAuth"
+        );
 
-      return;
-    }
+      window.location.href =
+      redirect || "/";
 
-    // create profile
-    const { error } = await supabase
-      .from("profiles")
-      .upsert([
-        {
-          id: user.id,
-          email: user.email,
-          username: cleanUsername,
-          avatar_url: randomAvatar,
-        },
-      ]);
-
-    if (error) {
-
-      console.error(error);
-
-      alert("Bir hata oluştu.");
-
-      setLoading(false);
-
-      return;
-    }
-
-    const redirect =
-      localStorage.getItem(
+      localStorage.removeItem(
         "redirectAfterAuth"
       );
-
-    window.location.href =
-    redirect || "/";
-
-    localStorage.removeItem(
-      "redirectAfterAuth"
-    );
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Bir sorun oluştu. Lütfen tekrar dene.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
