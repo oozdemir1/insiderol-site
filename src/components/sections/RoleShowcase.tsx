@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Briefcase } from "lucide-react";
 import { slugifyText } from "@/app/constants/normalizationUtils";
+import { roundStatCount } from "@/app/constants/roundStatCount";
 
 type ShowcaseRole = {
   id: number;
@@ -21,7 +22,7 @@ export default function RoleShowcase({
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-[var(--text-dark)]">
-            {totalCount}+ pozisyon
+            {roundStatCount(totalCount)}+ pozisyon
           </h2>
           <p className="text-[var(--muted-dark)] text-lg mt-4">
             Aradığın pozisyonu bul, maaş ve deneyimleri incele.

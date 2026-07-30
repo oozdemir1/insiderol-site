@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { roundStatCount } from "@/app/constants/roundStatCount";
 
 function StatRing({
   count,
@@ -87,11 +88,11 @@ function InviteRing({
 }
 
 export default function StatsSection({
-  companyCount,
+  totalSubmissionCount,
   salaryCount,
   reviewCount,
 }: {
-  companyCount: number;
+  totalSubmissionCount: number;
   salaryCount: number;
   reviewCount: number;
 }) {
@@ -114,7 +115,7 @@ export default function StatsSection({
     <section className="bg-[var(--section-light)] py-28 px-4">
       <div className="text-center mb-14 px-4">
         <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-[var(--text-dark)]">
-          çalışan deneyimi platformu
+          Bugüne kadar
         </h2>
 
         <p className="text-[var(--muted-dark)] text-lg mt-5 leading-8 max-w-2xl mx-auto">
@@ -124,17 +125,17 @@ export default function StatsSection({
 
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-around items-center gap-12 flex-wrap">
         <StatRing
-          count={companyCount}
+          count={roundStatCount(totalSubmissionCount)}
           offset={offset}
           circumference={circumference}
           radius={radius}
           strokeWidth={strokeWidth}
-          label="Şirket"
+          label="Toplam paylaşım"
         />
 
         {salaryCount > 0 ? (
           <StatRing
-            count={salaryCount}
+            count={roundStatCount(salaryCount)}
             offset={offset}
             circumference={circumference}
             radius={radius}
@@ -147,7 +148,7 @@ export default function StatsSection({
 
         {reviewCount > 0 ? (
           <StatRing
-            count={reviewCount}
+            count={roundStatCount(reviewCount)}
             offset={offset}
             circumference={circumference}
             radius={radius}

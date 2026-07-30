@@ -29,6 +29,10 @@ export default async function HomePage() {
     { data: allRoles },
     { count: salaryCount },
     { count: reviewCount },
+    { count: interviewCount },
+    { count: benefitsCount },
+    { count: compensationCount },
+    { count: workStyleCount },
   ] = await Promise.all([
     supabase.from("companies").select("id", { count: "exact", head: true }),
     supabase.from("companies").select("name, slug, logo_url"),
@@ -44,7 +48,43 @@ export default async function HomePage() {
       .from("company_reviews")
       .select("id", { count: "exact", head: true })
       .eq("moderation_status", "approved"),
+    supabase
+      .from("interview_experiences")
+      .select("id", { count: "exact", head: true })
+      .eq("moderation_status", "approved")
+      .eq("role_status", "approved")
+      .eq("company_status", "approved"),
+    supabase
+      .from("company_benefits")
+      .select("id", { count: "exact", head: true })
+      .eq("moderation_status", "approved")
+      .eq("role_status", "approved")
+      .eq("company_status", "approved"),
+    supabase
+      .from("company_compensation")
+      .select("id", { count: "exact", head: true })
+      .eq("moderation_status", "approved")
+      .eq("role_status", "approved")
+      .eq("company_status", "approved"),
+    supabase
+      .from("company_work_style")
+      .select("id", { count: "exact", head: true })
+      .eq("moderation_status", "approved")
+      .eq("role_status", "approved")
+      .eq("company_status", "approved"),
   ]);
+
+  // The homepage stat ring shows this instead of company count — company
+  // count is already shown further down in CompanyShowcase, so the ring
+  // is more useful surfacing the platform's total content volume across
+  // all six submission types instead of duplicating that number.
+  const totalSubmissionCount =
+    (salaryCount || 0) +
+    (reviewCount || 0) +
+    (interviewCount || 0) +
+    (benefitsCount || 0) +
+    (compensationCount || 0) +
+    (workStyleCount || 0);
 
   const showcaseCompanies = pickRandom(
     allCompanies || [],
@@ -58,7 +98,7 @@ export default async function HomePage() {
       <Hero />
 
       <StatsSection
-        companyCount={companyCount || 0}
+        totalSubmissionCount={totalSubmissionCount}
         salaryCount={salaryCount || 0}
         reviewCount={reviewCount || 0}
       />

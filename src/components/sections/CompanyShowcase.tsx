@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { roundStatCount } from "@/app/constants/roundStatCount";
 
 type ShowcaseCompany = {
   name: string;
@@ -20,7 +21,7 @@ export default function CompanyShowcase({
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-[var(--text-dark)]">
-            {totalCount}+ şirket profili
+            {roundStatCount(totalCount)}+ şirket profili
           </h2>
           <p className="text-[var(--muted-dark)] text-lg mt-4">
             Aradığın şirketi bul, sayfasını incele, ilk deneyimi sen paylaş.
