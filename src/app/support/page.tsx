@@ -180,7 +180,7 @@ export default function SupportPage() {
 
       <section className="bg-[var(--section-light)] py-20 px-8">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold text-[var(--text-dark)] text-center mb-8">
+           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--text-dark)] text-center mb-8">
             Sıkça Sorulan Sorular
           </h2>
 
@@ -190,8 +190,8 @@ export default function SupportPage() {
 
       <section className="bg-[var(--section-light-2)] py-20 px-8">
         <div className="max-w-xl mx-auto">
-          <h2 className="text-2xl font-bold text-[var(--text-dark)] text-center mb-8">
-            Bize ulaş
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--text-dark)] text-center mb-8">
+           Bize ulaş
           </h2>
 
           {done ? (
