@@ -7,7 +7,7 @@ import SelectDropdown from "./SelectDropdown";
 import CompanyAutocomplete from "./CompanyAutocomplete";
 import RoleAutocomplete from "./RoleAutocomplete";
 import LoginForm from "../auth/LoginForm";
-import RegisterForm from "../auth/RegisterForm";
+import RegisterPanel from "../auth/RegisterPanel";
 import AuthGoogleButton from "../auth/AuthGoogleButton";
 import AuthDivider from "../auth/AuthDivider";
 import FormSuccessMessage from "../ui/FormSuccessMessage";
@@ -1445,28 +1445,8 @@ return (
               ) : (
                 
               <div >
-
-             <h1 className="text-3xl font-bold mb-2 text-center">
-              Kaydol
-              </h1>
-
-            <div className="text-center mb-8">
-
-              <span className="text-white">
-                insider
-              </span>
-
-              <span className="text-[var(--accent)]">
-                ol
-              </span>
-
-              {"'a katıl"}
-
-            </div>
-              <AuthGoogleButton />
-              <AuthDivider />
-            <RegisterForm />
-      </div>
+                <RegisterPanel />
+              </div>
           
 
               )}

@@ -10,7 +10,15 @@ import {
 } from "@/app/constants/validatePassword";
 import Turnstile, { TurnstileHandle } from "./Turnstile";
 
-export default function RegisterForm() {
+export default function RegisterForm({
+  onRegistered,
+}: {
+  // Called instead of rendering a success state inline — the caller
+  // (RegisterPanel) owns showing the "check your email" message so it
+  // can also hide the Google button/heading that make no sense once
+  // registration is done but unconfirmed.
+  onRegistered?: (email: string) => void;
+} = {}) {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +26,6 @@ export default function RegisterForm() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [done, setDone] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{
     username?: string;
     email?: string;
@@ -126,17 +133,8 @@ export default function RegisterForm() {
   }
 
   setLoading(false);
-  setDone(true);
+  onRegistered?.(email);
 }
-
-  if (done) {
-    return (
-      <p className="text-[var(--muted)] text-center py-4">
-        Kayıt başarılı! Devam etmeden önce e-postana gönderdiğimiz
-        onay bağlantısına tıklaman gerekiyor.
-      </p>
-    );
-  }
 
   return (
     <form

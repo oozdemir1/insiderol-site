@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import RatingPills from "../RatingPills";
 import LoginForm from "../auth/LoginForm";
-import RegisterForm from "../auth/RegisterForm";
+import RegisterPanel from "../auth/RegisterPanel";
 import AuthGoogleButton from "../auth/AuthGoogleButton";
 import AuthDivider from "../auth/AuthDivider";
 import RoleAutocomplete from "./RoleAutocomplete";
@@ -1414,28 +1414,8 @@ if (mode === "edit") {
               ) : (
                 
               <div >
-
-             <h1 className="text-3xl font-bold mb-2 text-center">
-              Kaydol
-              </h1>
-
-            <div className="text-center mb-8">
-
-              <span className="text-white">
-                insider
-              </span>
-
-              <span className="text-[var(--accent)]">
-                ol
-              </span>
-
-              {"'a katıl"}
-
-            </div>
-              <AuthGoogleButton />
-              <AuthDivider />
-            <RegisterForm />
-      </div>
+                <RegisterPanel />
+              </div>
           
 
               )}
