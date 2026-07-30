@@ -110,14 +110,26 @@ export default function RegisterForm() {
     return;
   }
 
+  // Supabase's enumeration-safe response for an already-registered email:
+  // signUp() returns 200 with no error, but a fake user object (a random
+  // id, not the real account's) with an empty identities array. Must be
+  // caught here, before complete-registration — that route looks the id
+  // up via the admin API, which won't find this fake id and would fail
+  // with a generic error instead of surfacing "email taken".
+  if (data.user && data.user.identities?.length === 0) {
+    setLoading(false);
+    turnstileRef.current?.reset();
+    setCaptchaToken(null);
+    setFieldErrors({ email: "Bu e-posta adresiyle zaten bir hesap var." });
+    return;
+  }
+
   if (data.user) {
 
   // Done server-side (service role) rather than a direct client insert:
   // signUp() leaves no active session while email confirmation is
   // pending, so a client-side insert runs as the anon role and gets
-  // rejected by RLS. This route also catches Supabase's enumeration-safe
-  // signUp response (empty identities array) for an email that's
-  // actually already registered.
+  // rejected by RLS.
   let completeRes: Response;
 
   try {

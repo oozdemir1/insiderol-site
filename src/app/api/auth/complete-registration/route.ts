@@ -22,23 +22,16 @@ export async function POST(request: NextRequest) {
 
   const admin = createAdminClient();
 
-  // Confirms this is really the auth user signUp() just created (not an
-  // id supplied by an attacker) and catches Supabase's enumeration-safe
-  // signUp response — when the email already belongs to an existing
-  // account, signUp() returns success with a user whose identities array
-  // is empty instead of an error.
+  // Confirms this is really the auth user signUp() just created, not an
+  // id supplied by an attacker. (The enumeration-safe "email already
+  // registered" response from signUp — a fake user with an empty
+  // identities array — is caught client-side before this route is ever
+  // called, since that fake user's id wouldn't resolve here anyway.)
   const { data: authUser, error: getUserError } =
     await admin.auth.admin.getUserById(userId);
 
   if (getUserError || !authUser.user || authUser.user.email !== email) {
     return NextResponse.json({ ok: false, error: "invalid_user" }, { status: 400 });
-  }
-
-  if (authUser.user.identities?.length === 0) {
-    return NextResponse.json(
-      { ok: false, error: "email_taken" },
-      { status: 409 }
-    );
   }
 
   const { error: insertError } = await admin
