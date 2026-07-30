@@ -51,13 +51,24 @@ export async function importRolesCsv(
     .map((row) => row.trim())
     .filter(Boolean);
 
- const roleNames = rows.slice(1);
+ const dataRows = rows.slice(1);
 
  let inserted = 0;
   let skipped = 0;
   let failed = 0;
+  let aliasesInserted = 0;
 
-for (const roleName of roleNames) {
+for (const row of dataRows) {
+  // Second column is optional: pipe-separated aliases for the role,
+  // e.g. "Göz Hastalıkları Uzmanı,Göz Doktoru|Göz Uzmanı" — pipe instead
+  // of comma since this parser doesn't handle quoted CSV fields.
+  const [rawName, rawAliases] = row.split(",");
+  const roleName = rawName?.trim();
+
+  if (!roleName) {
+    continue;
+  }
+
 const normalizedName =
   normalizeRoleName(roleName);
 
@@ -71,34 +82,86 @@ const { data: existing } =
     )
     .maybeSingle();
 
+let roleId = existing?.id as number | undefined;
+
 if (existing) {
   skipped++;
-  continue;
-}
-
-const { error } =
-  await supabase
-    .from("roles")
-    .insert({
-      name: roleName,
-      normalized_name:
-        normalizedName,
-    });
-
-if (error) {
-  failed++;
 } else {
+  const { data: newRole, error } =
+    await supabase
+      .from("roles")
+      .insert({
+        name: roleName,
+        normalized_name:
+          normalizedName,
+      })
+      .select("id")
+      .single();
+
+  if (error) {
+    failed++;
+    continue;
+  }
+
+  roleId = newRole.id;
   inserted++;
 }
+
+  // Backfill aliases even for a role that already existed (skipped
+  // above), so re-running the same CSV after adding this column fills
+  // in aliases for roles seeded before it existed.
+  const aliasList = (rawAliases ?? "")
+    .split("|")
+    .map((alias) => alias.trim())
+    .filter(Boolean);
+
+  for (const alias of aliasList) {
+    const normalizedAlias =
+      normalizeSearchText(alias);
+
+    // An alias identical to the role's own name is redundant — the
+    // direct roles.normalized_name search already covers it.
+    if (normalizedAlias === normalizedName) {
+      continue;
+    }
+
+    const { data: existingAlias } =
+      await supabase
+        .from("role_aliases")
+        .select("id")
+        .eq(
+          "normalized_alias",
+          normalizedAlias
+        )
+        .maybeSingle();
+
+    if (existingAlias) {
+      continue;
+    }
+
+    const { error: aliasError } =
+      await supabase
+        .from("role_aliases")
+        .insert({
+          role_id: roleId,
+          alias,
+          normalized_alias: normalizedAlias,
+        });
+
+    if (!aliasError) {
+      aliasesInserted++;
+    }
+  }
 }
 
 console.log({
   inserted,
   skipped,
   failed,
+  aliasesInserted,
 });
 redirect(
-  `/admin/import-content?roleInserted=${inserted}&roleSkipped=${skipped}&roleFailed=${failed}`
+  `/admin/import-content?roleInserted=${inserted}&roleSkipped=${skipped}&roleFailed=${failed}&roleAliasesInserted=${aliasesInserted}`
 );}
 
 export async function importCompaniesCsv(

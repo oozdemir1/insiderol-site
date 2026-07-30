@@ -14,6 +14,7 @@ export default async function ImportContentPage({
     roleInserted?: string;
     roleSkipped?: string;
     roleFailed?: string;
+    roleAliasesInserted?: string;
   }>;
 }) {
   const supabase = await createClient();
@@ -62,6 +63,23 @@ const params = await searchParams;
             CSV dosyasından roller ekleyin.
           </p>
 
+          <div className="mb-4 text-sm text-[var(--muted-dark)]">
+            Beklenen CSV sütunları:
+            <br />
+            name,aliases
+            <br />
+            <span className="text-xs">
+              aliases opsiyoneldir, birden fazla alias &quot;|&quot;
+              ile ayrılır.
+            </span>
+          </div>
+
+          <div className="mt-2 rounded bg-gray-50 p-2 text-xs text-[var(--muted-dark)]">
+            Örnek:
+            <br />
+            Göz Hastalıkları Uzmanı,Göz Doktoru|Göz Uzmanı
+          </div>
+
           <form action={importRolesCsv}>
 
             <a
@@ -97,6 +115,10 @@ const params = await searchParams;
 
                     <div>
                       Hatalı: {params.roleFailed}
+                    </div>
+
+                    <div>
+                      Eklenen alias: {params.roleAliasesInserted}
                     </div>
                   </div>
                 )}
