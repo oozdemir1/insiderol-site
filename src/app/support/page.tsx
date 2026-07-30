@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { MailPlus } from "lucide-react";
+import { MailPlus, ChevronDown } from "lucide-react";
 import Turnstile, { TurnstileHandle } from "@/components/auth/Turnstile";
 import FormSuccessMessage from "@/components/ui/FormSuccessMessage";
 import { CheckCircle2 } from "lucide-react";
@@ -15,7 +15,88 @@ const EMAIL_MAX_LENGTH = 255;
 const SUBJECT_MAX_LENGTH = 150;
 const MESSAGE_MAX_LENGTH = 500;
 
-export default function ContactPage() {
+const FAQ_ITEMS = [
+  {
+    question: "Paylaşımlarım gerçekten anonim mi?",
+    answer:
+      "Varsayılan olarak evet — isim/kullanıcı adı paylaşımlarında gösterilmez, sadece şirket/pozisyon/veri görünür. İstersen anonim değil, kullanıcı adınla da paylaşabilirsin.",
+  },
+  {
+    question: "Şirketimi veya pozisyonumu listede bulamıyorum, ne yapmalıyım?",
+    answer:
+      "Formda yeni bir isim yazabilirsin; bu bir öneri olarak incelemeye gönderilir, onaylandıktan sonra sistemde görünür ve paylaşımınla otomatik eşleşir.",
+  },
+  {
+    question: "Paylaşımım neden \"beklemede\" görünüyor, ne zaman yayınlanır?",
+    answer:
+      "Her paylaşım, spam ve kötüye kullanımı önlemek için önce incelemeden geçiyor. Bu genelde kısa sürede tamamlanır.",
+  },
+  {
+    question: "Hesabımı silersem paylaşımlarım da silinir mi?",
+    answer:
+      "Hesabın silinir, ama anonim paylaşımların (maaş, yorum, mülakat deneyimi vb.) veri bütünlüğü için sistemde kalmaya devam eder — artık hiçbir şekilde sana bağlanamaz.",
+  },
+  {
+    question: "Neden paylaşım yaparken bir doğrulama (captcha) istiyorsunuz?",
+    answer: "Botların ve otomatik spam paylaşımların önüne geçmek için.",
+  },
+  {
+    question: "\"Çok fazla bekleyen paylaşımın var\" hatası alıyorum, bu ne demek?",
+    answer:
+      "Kısa sürede çok fazla paylaşım/öneri gönderildiğinde, önceki paylaşımların incelenmesini beklemen istenir — bu da kötüye kullanımı önlemeye yönelik bir kural.",
+  },
+  {
+    question: "Paylaşılan bilgilerin doğruluğunu nasıl kontrol ediyorsunuz?",
+    answer:
+      "Her paylaşım yayınlanmadan önce moderasyon ekibi tarafından gözden geçiriliyor; buna rağmen bilgiler kullanıcı beyanına dayanır.",
+  },
+  {
+    question: "Yanlış, saldırgan veya kötü niyetli bir paylaşım gördüm, ne yapmalıyım?",
+    answer:
+      "Aşağıdaki destek formundan bize bildirebilirsin, en kısa sürede inceleyip gerekeni yaparız.",
+  },
+];
+
+function FaqAccordion() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  return (
+    <div className="form-shell divide-y divide-black/10">
+      {FAQ_ITEMS.map((item, index) => {
+        const isOpen = openIndex === index;
+
+        return (
+          <div key={item.question}>
+            <button
+              type="button"
+              onClick={() =>
+                setOpenIndex(isOpen ? null : index)
+              }
+              className="w-full flex items-center justify-between gap-4 py-4 text-left font-medium text-[var(--text-dark)]"
+            >
+              {item.question}
+
+              <ChevronDown
+                size={18}
+                className={`shrink-0 text-[var(--muted-dark)] transition-transform duration-200 ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {isOpen && (
+              <div className="pb-4 text-sm text-[var(--muted-dark)] leading-relaxed">
+                {item.answer}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export default function SupportPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
@@ -83,22 +164,36 @@ export default function ContactPage() {
       <section className="bg-[var(--surface)] py-24 px-8 text-center">
         <div className="max-w-3xl mx-auto">
           <p className="text-sm font-semibold tracking-wide uppercase text-[var(--accent)] mb-4">
-            İLETİŞİM
+            DESTEK
           </p>
 
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white leading-tight">
-            Bize ulaş
+            Sana nasıl yardımcı olabiliriz?
           </h1>
 
           <p className="text-[var(--muted)] text-lg leading-8 mt-6 max-w-2xl mx-auto">
-            Bir sorunuz, geri bildiriminiz ya da şirket profiliyle ilgili bir
-            talebiniz mi var? Aşağıdaki formu doldurun, size dönüş yapalım.
+            Aşağıda sık sorulan soruları bulabilirsin. Aradığın cevap yoksa
+            iletişim formunu doldur, sana dönüş yapalım.
           </p>
         </div>
       </section>
 
-      <section className="py-20 px-8">
+      <section className="bg-[var(--section-light)] py-20 px-8">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-bold text-[var(--text-dark)] text-center mb-8">
+            Sıkça Sorulan Sorular
+          </h2>
+
+          <FaqAccordion />
+        </div>
+      </section>
+
+      <section className="bg-[var(--section-light-2)] py-20 px-8">
         <div className="max-w-xl mx-auto">
+          <h2 className="text-2xl font-bold text-[var(--text-dark)] text-center mb-8">
+            Bize ulaş
+          </h2>
+
           {done ? (
             <FormSuccessMessage
               icon={<CheckCircle2 className="text-[var(--accent)]" size={28} />}
@@ -155,16 +250,16 @@ export default function ContactPage() {
 
               <div>
                 <label className="form-label block mb-2">Mesaj</label>
-                <div className="relative">
-                  <textarea
-                    value={message}
-                    onFocus={() => setErrorMessage("")}
-                    onChange={(e) => setMessage(e.target.value)}
-                    maxLength={MESSAGE_MAX_LENGTH}
-                    className="form-field pb-6"
-                    rows={5}
-                  />
-                  <span className="absolute bottom-2 right-3 text-xs text-[var(--muted-dark)] pointer-events-none">
+                <textarea
+                  value={message}
+                  onFocus={() => setErrorMessage("")}
+                  onChange={(e) => setMessage(e.target.value)}
+                  maxLength={MESSAGE_MAX_LENGTH}
+                  className="form-field"
+                  rows={5}
+                />
+                <div className="flex justify-end mt-1">
+                  <span className="text-[11px] text-[var(--muted-dark)]">
                     {message.length}/{MESSAGE_MAX_LENGTH}
                   </span>
                 </div>

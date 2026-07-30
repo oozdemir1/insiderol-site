@@ -53,7 +53,7 @@ export default function PrivacyPage() {
               saklanır.
             </p>
             <p className="mb-4">
-              <strong className="text-[var(--text-dark)]">İletişim Formu Verileri:</strong>{" "}
+              <strong className="text-[var(--text-dark)]">Destek Formu Verileri:</strong>{" "}
               Bize ulaştığınızda adınız (isteğe bağlı), e-posta adresiniz,
               mesaj konunuz ve mesaj içeriğiniz alınır. Kötüye kullanımı
               (spam, aşırı gönderim) önlemek amacıyla mesajınızla birlikte IP
@@ -142,7 +142,7 @@ export default function PrivacyPage() {
               silinir; ancak paylaştığınız içerikler (maaş, yorum, mülakat
               deneyimi vb.) Platform&apos;un istatistiksel bütünlüğünü
               korumak amacıyla kullanıcı bağlantısı kaldırılarak
-              (anonimleştirilerek) saklanmaya devam eder. İletişim formu
+              (anonimleştirilerek) saklanmaya devam eder. Destek formu
               mesajlarınız, talep sürecinin takibi amacıyla makul bir süre
               saklanır.
             </p>
@@ -220,10 +220,10 @@ export default function PrivacyPage() {
             <p>
               Haklarınızı kullanmak için{" "}
               <Link
-                href="/contact"
+                href="/support"
                 className="text-[var(--accent)] hover:underline"
               >
-                iletişim sayfamız
+                destek sayfamız
               </Link>{" "}
               üzerinden bize ulaşabilirsiniz.
             </p>

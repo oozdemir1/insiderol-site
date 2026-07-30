@@ -171,10 +171,10 @@ export default function TermsPage() {
             <p>
               Sorularınız için{" "}
               <Link
-                href="/contact"
+                href="/support"
                 className="text-[var(--accent)] hover:underline"
               >
-                iletişim sayfamız
+                destek sayfamız
               </Link>{" "}
               üzerinden bize ulaşabilirsiniz.
             </p>

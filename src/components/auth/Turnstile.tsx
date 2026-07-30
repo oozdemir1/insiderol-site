@@ -79,7 +79,7 @@ const Turnstile = forwardRef<
         strategy="afterInteractive"
         onLoad={() => setScriptLoaded(true)}
       />
-      <div ref={containerRef} />
+      <div ref={containerRef} className="flex justify-center" />
     </>
   );
 });

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./global.css";
 import NavbarServer from "@/components/NavbarServer";
@@ -48,6 +48,10 @@ export const metadata: Metadata = {
       "Türkiye'deki şirketler için anonim maaş, çalışan yorumu ve mülakat deneyimi platformu.",
     images: ["/og-image.png"],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1b2421",
 };
 
 export default function RootLayout({

@@ -35,10 +35,10 @@ export default function Footer() {
           <span className="text-white/15">·</span>
 
           <a
-            href="/contact"
+            href="/support"
             className="text-[var(--muted)] hover:text-[var(--accent)] transition-all duration-200"
           >
-            İletişim
+            Destek
           </a>
 
           <span className="text-white/15">·</span>
