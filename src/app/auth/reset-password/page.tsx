@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import {
@@ -9,8 +9,9 @@ import {
   PASSWORD_REQUIREMENTS_MESSAGE,
 } from "@/app/constants/validatePassword";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -38,11 +39,36 @@ export default function ResetPasswordPage() {
       return;
     }
 
+    const tokenHash = searchParams.get("token_hash");
+    const type = searchParams.get("type");
+
+    if (!tokenHash || type !== "recovery") {
+      setErrorMessage(
+        "Bağlantı geçersiz. Lütfen yeni bir sıfırlama bağlantısı iste."
+      );
+      return;
+    }
+
     setLoading(true);
 
-    // Relies on the recovery session Supabase's client already
-    // established from the token in this page's URL (the link from
-    // the reset email) — no separate token handling needed here.
+    // The recovery token is verified here, on submit, rather than on page
+    // load — a link-scanning bot (common on email providers/security
+    // gateways, which is often why these emails land in Junk) will GET
+    // this page but won't fill in and submit the form, so it can't burn
+    // the one-time token before the real user gets to it.
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: "recovery",
+    });
+
+    if (verifyError) {
+      setLoading(false);
+      setErrorMessage(
+        "Bağlantının süresi dolmuş olabilir. Lütfen yeni bir sıfırlama bağlantısı iste."
+      );
+      return;
+    }
+
     const { error } = await supabase.auth.updateUser({ password });
 
     setLoading(false);
@@ -162,5 +188,13 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
