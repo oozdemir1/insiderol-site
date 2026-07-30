@@ -186,20 +186,26 @@ useEffect(() => {
 
   if (savedDraft) {
 
-    const parsedDraft =
-      JSON.parse(savedDraft);
+    try {
+      const parsedDraft =
+        JSON.parse(savedDraft);
 
- setFormData({
-  ...INITIAL_FORM_DATA,
-  ...parsedDraft,
+      setFormData({
+        ...INITIAL_FORM_DATA,
+        ...parsedDraft,
 
-  company_id:
-    companyId ??
-    parsedDraft.company_id,
-});
+        company_id:
+          companyId ??
+          parsedDraft.company_id,
+      });
 
-    if (parsedDraft.roleSearch) {
-      setRoleSearch(parsedDraft.roleSearch);
+      if (parsedDraft.roleSearch) {
+        setRoleSearch(parsedDraft.roleSearch);
+      }
+    } catch {
+      // Corrupted/stale-format draft — fall back to a blank form
+      // instead of throwing inside this effect.
+      localStorage.removeItem(draftKey);
     }
   } else {
     // No draft yet — seed is_anonymous from the account's saved

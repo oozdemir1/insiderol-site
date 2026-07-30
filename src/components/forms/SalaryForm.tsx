@@ -216,25 +216,31 @@ const shouldShowTechStack = formData.role_id
 
   if (savedDraft) {
 
-    const parsedDraft =
-      JSON.parse(savedDraft);
+    try {
+      const parsedDraft =
+        JSON.parse(savedDraft);
 
-    setFormData({
-      ...INITIAL_FORM_DATA,
-      ...parsedDraft,
+      setFormData({
+        ...INITIAL_FORM_DATA,
+        ...parsedDraft,
 
-      companyId:
-        companyId ??
-        parsedDraft.companyId,
+        companyId:
+          companyId ??
+          parsedDraft.companyId,
 
-      companyName:
-        companyName ??
-        parsedDraft.companyName,
+        companyName:
+          companyName ??
+          parsedDraft.companyName,
 
-      hqCity:
-        hqCity ??
-        parsedDraft.hqCity,
-    });
+        hqCity:
+          hqCity ??
+          parsedDraft.hqCity,
+      });
+    } catch {
+      // Corrupted/stale-format draft — fall back to a blank form
+      // instead of throwing inside this effect.
+      localStorage.removeItem(draftKey);
+    }
   } else {
     // No draft yet — seed is_anonymous from the account's saved
     // preference instead of the hardcoded default.
