@@ -66,8 +66,9 @@ export default function Tabs({
           <div
               className="
                 absolute
-                left-0
-                right-0
+                left-1/2
+                -translate-x-1/2
+                w-screen
                 bottom-0
                 h-4
                 border-b
@@ -76,6 +77,12 @@ export default function Tabs({
                 border-black/10
                 pointer-events-none
               "
+              // The parent (Tabs' sticky wrapper) sits inside a max-w-6xl
+              // mx-auto container on every page that renders this — left-0/
+              // right-0 would only span that narrower box. Breaking out to
+              // full viewport width here relies on that container being
+              // horizontally centered (mx-auto), same trick as any
+              // full-bleed-from-a-centered-container pattern.
             />
             
     </div>

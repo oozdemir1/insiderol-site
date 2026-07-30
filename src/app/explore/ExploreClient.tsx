@@ -38,10 +38,16 @@ const EXPERIENCE_OPTIONS = experienceLevels.map((level) => ({
   label: level.name,
 }));
 
+// "Deneyim" (not "Paylaşım") for the no-filter case — this feed only
+// ever aggregates salary/review/interview, never benefits/compensation/
+// work-style, so a generic "submission" noun overclaims. "Deneyim"
+// both fits (these three are personal, narrative submissions, unlike
+// the poll-style excluded ones) and matches the site's own established
+// vocabulary ("anonim çalışan deneyimi", "çalışan deneyimi platformu").
 const TYPE_NOUN: Record<"" | "salary" | "review" | "interview", string> = {
-  "": "Paylaşım",
-  salary: "Maaş Paylaşımı",
-  review: "Yorum Paylaşımı",
+  "": "Deneyim",
+  salary: "Maaş",
+  review: "Yorum",
   interview: "Mülakat Deneyimi",
 };
 
@@ -88,13 +94,24 @@ export default function ExploreClient({
           top-20
           z-40
           bg-[var(--background)]
+          backdrop-blur-2xl
+          border-b
+          border-black/10
+          shadow-sm
           pt-4
+          pb-5
+          sm:pb-4
           mb-4
         "
-        style={{
-          paddingBottom: "1.25rem",
-        }}
       >
+        {/* pb-5 on mobile (vs. the sm:pb-4 that matches roles/companies'
+            filter bar exactly) gives ExploreModeToggle's -inset-y-1 pill
+            room to breathe when the toggle is the last item in the
+            stacked mobile column — without it the pill got visually
+            cramped against this border. Desktop doesn't need the extra
+            4px since the toggle sits mid-row next to the dropdown, so
+            keeping pb-4 there is what lines this banner's bottom border
+            up with the other pages' at that width. */}
         <div className="container mx-auto px-4 max-w-7xl flex flex-col items-center sm:flex-row sm:flex-wrap sm:justify-between gap-x-4 gap-y-3">
           {compareMode ? (
             <div className="w-full sm:flex-1">
@@ -220,21 +237,6 @@ export default function ExploreClient({
 
           <ExploreModeToggle compareMode={compareMode} compareSubMode={compareSubMode} />
         </div>
-
-        <div
-          className="
-            absolute
-            left-0
-            right-0
-            bottom-0
-            h-4
-            border-b
-            bg-[var(--background)]
-            shadow-sm
-            border-black/10
-            pointer-events-none
-          "
-        />
       </div>
 
       <div
@@ -257,7 +259,7 @@ export default function ExploreClient({
           <>
             <div className="text-center mb-4">
               <span className="text-2xl text-[var(--muted-dark)]">
-                En Son Yapılan
+                Son Eklenen
               </span>
 
               <span className="mx-2 text-2xl font-semibold text-[var(--text-dark)]">
