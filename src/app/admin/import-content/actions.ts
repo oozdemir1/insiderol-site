@@ -57,6 +57,7 @@ export async function importRolesCsv(
   let skipped = 0;
   let failed = 0;
   let aliasesInserted = 0;
+  let aliasesFailed = 0;
 
 for (const row of dataRows) {
   // Second column is optional: pipe-separated aliases for the role,
@@ -148,7 +149,17 @@ if (existing) {
           normalized_alias: normalizedAlias,
         });
 
-    if (!aliasError) {
+    if (aliasError) {
+      // Don't swallow this — an RLS policy gap here fails every insert
+      // identically to a real duplicate/constraint error, and previously
+      // went completely unlogged (0 rows written, admin saw no failure).
+      console.error(
+        "importRolesCsv: role_aliases insert failed",
+        { alias, roleId },
+        aliasError
+      );
+      aliasesFailed++;
+    } else {
       aliasesInserted++;
     }
   }
@@ -159,9 +170,10 @@ console.log({
   skipped,
   failed,
   aliasesInserted,
+  aliasesFailed,
 });
 redirect(
-  `/admin/import-content?roleInserted=${inserted}&roleSkipped=${skipped}&roleFailed=${failed}&roleAliasesInserted=${aliasesInserted}`
+  `/admin/import-content?roleInserted=${inserted}&roleSkipped=${skipped}&roleFailed=${failed}&roleAliasesInserted=${aliasesInserted}&roleAliasesFailed=${aliasesFailed}`
 );}
 
 export async function importCompaniesCsv(

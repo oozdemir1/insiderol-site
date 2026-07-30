@@ -15,6 +15,7 @@ export default async function ImportContentPage({
     roleSkipped?: string;
     roleFailed?: string;
     roleAliasesInserted?: string;
+    roleAliasesFailed?: string;
   }>;
 }) {
   const supabase = await createClient();
@@ -120,6 +121,14 @@ const params = await searchParams;
                     <div>
                       Eklenen alias: {params.roleAliasesInserted}
                     </div>
+
+                    {params.roleAliasesFailed &&
+                      params.roleAliasesFailed !== "0" && (
+                        <div className="text-red-700">
+                          Başarısız alias: {params.roleAliasesFailed}{" "}
+                          (muhtemelen RLS — sunucu loglarına bak)
+                        </div>
+                      )}
                   </div>
                 )}
             </form>
