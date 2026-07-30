@@ -28,7 +28,10 @@ export default function RegisterPanel() {
           Devam etmeden önce{" "}
           <span className="text-white">{registeredEmail}</span>{" "}
           e-posta adresine gönderdiğimiz onay bağlantısına tıklaman
-          gerekiyor. Lütfen gelen kutunun yanı sıra Spam ve Gereksiz (Junk) klasörlerini de kontrol etmeyi unutma.
+          gerekiyor.
+        </p>
+         <p className="text-[var(--muted)] text-center py-4">
+        Lütfen gelen kutunun yanı sıra Spam ve Gereksiz (Junk) klasörlerini de kontrol etmeyi unutma.
         </p>
       </div>
     );
